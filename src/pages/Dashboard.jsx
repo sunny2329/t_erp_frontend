@@ -318,7 +318,7 @@ export default function Dashboard() {
         />
       </div>
 
-      <LoadDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} loadId={selectedLoadId} />
+      <LoadDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} loadId={selectedLoadId} onCreated={setSelectedLoadId} />
       <LoadsFilterPanel
         open={filterPanelOpen}
         onClose={() => setFilterPanelOpen(false)}

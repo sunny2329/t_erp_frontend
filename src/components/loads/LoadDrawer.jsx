@@ -6,9 +6,9 @@ import { LoadEditDrawer } from './LoadEditDrawer'
 // Loadx-Youngs-Frontend's split between LoadCreateModal (simple, no splits/
 // dispatch — a load can't be split or dispatched before it exists) and
 // LoadDetailDrawer (full editor: splits, Dispatch Load, Broker Dispatch).
-export function LoadDrawer({ open, onClose, loadId }) {
+export function LoadDrawer({ open, onClose, loadId, onCreated }) {
   if (!open) return null
   return loadId
     ? <LoadEditDrawer open={open} onClose={onClose} loadId={loadId} />
-    : <CreateLoadModal open={open} onClose={onClose} />
+    : <CreateLoadModal open={open} onClose={onClose} onCreated={onCreated} />
 }

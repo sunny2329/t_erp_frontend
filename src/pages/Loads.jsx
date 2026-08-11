@@ -131,7 +131,7 @@ export default function Loads() {
         emptyLabel="No loads match your filters."
       />
 
-      <LoadDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} loadId={selectedLoadId} />
+      <LoadDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} loadId={selectedLoadId} onCreated={setSelectedLoadId} />
     </div>
   )
 }

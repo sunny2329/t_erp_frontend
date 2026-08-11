@@ -36,7 +36,7 @@ function blankNewLoad() {
 // form than LoadDetailDrawer: no splits, no dispatch (a load can't be split
 // or dispatched before it exists). Once saved, reopen it from the Loads list
 // to get the full LoadEditDrawer with splits/dispatch.
-export function CreateLoadModal({ open, onClose }) {
+export function CreateLoadModal({ open, onClose, onCreated }) {
   const { customers, customersCrud, carriers, users, terminals, locations, locationsCrud, loadsCrud, typeOptions } = useData()
 
   const [form, setForm] = useState(blankNewLoad())
@@ -80,9 +80,17 @@ export function CreateLoadModal({ open, onClose }) {
     }
     setSaving(true)
     try {
-      await loadsCrud.add(form)
+      const created = await loadsCrud.add(form)
       toast.success('Load created')
-      onClose()
+      // Switch straight into the full editor for the load that was just
+      // created — splits/dispatch/documents/etc. only make sense once a
+      // load actually exists, so this is where a dispatcher would want to
+      // land next anyway. onCreated hands the new id back to the parent
+      // (Loads.jsx/Dashboard.jsx), which keeps the drawer open and swaps it
+      // from CreateLoadModal to LoadEditDrawer (see LoadDrawer.jsx) —
+      // deliberately NOT calling onClose() here, since that would close the
+      // drawer instead of handing off to the edit view.
+      onCreated?.(created.id)
     } catch (err) {
       toast.error(err.message || 'Failed to create load')
     } finally {
