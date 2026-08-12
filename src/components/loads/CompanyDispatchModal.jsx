@@ -84,11 +84,6 @@ export function CompanyDispatchModal({ open, onClose, loadId, leg, splitNo, onSa
   const carrierDrivers = drivers.filter((d) => d.carrierId === form.carrierId && d.active)
   const carrierTrailers = trailers.filter((t) => t.carrierId === form.carrierId && t.active)
 
-  // Once a leg has actually moved (In Transit) or finished (Completed),
-  // "Dispatch Load" (which jumps status to In Transit) no longer makes
-  // sense — only plain saves are offered from then on.
-  const isAdvancedStatus = form.trackingStatusId === TRACKING_STATUS.IN_TRANSIT || form.trackingStatusId === TRACKING_STATUS.COMPLETED
-
   const handleCarrierChange = (carrierId) => {
     set({ carrierId, vehicleId: '', driverId1: '', driverId2: '', trailerId: '' })
   }
@@ -179,7 +174,14 @@ export function CompanyDispatchModal({ open, onClose, loadId, leg, splitNo, onSa
       footer={
         <>
           <Button variant="secondary" onClick={onClose} disabled={saving}>Cancel</Button>
-          {!isAdvancedStatus && (
+          {/* Matches the reference Loadx-Youngs-Frontend's DispatchLoadModal:
+              "Dispatch Load" (forces tracking status straight to In Transit)
+              only exists for a brand-new dispatch — gated on `!editMode`
+              there, `!leg` here — never on the current tracking status. Once
+              a leg already exists, only a plain save is offered; advancing
+              an existing leg's status from here on is the split card's
+              inline Tracking Status dropdown's job, not this modal's. */}
+          {!leg && (
             <Button variant="secondary" onClick={() => handleSubmit(TRACKING_STATUS.IN_TRANSIT)} disabled={saving}>
               {saving ? 'Saving…' : 'Dispatch Load'}
             </Button>

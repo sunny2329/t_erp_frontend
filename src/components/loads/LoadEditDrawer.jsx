@@ -183,6 +183,19 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
   // --- Stops (grouped by split_no) ---
   const sortedStops = [...form.stops].sort((a, b) => a.sequence - b.sequence)
   const splitNos = [...new Set(sortedStops.map((s) => s.splitNo || 1))].sort((a, b) => a - b)
+  // A split can't be dispatched until every split ahead of it (lower
+  // split_no) has handed off — i.e. its leg's Tracking Status is
+  // Completed(13). Returns the split_no still blocking `splitNo`, or null if
+  // it's clear to dispatch. For split 1 (or a non-split load, which is just
+  // a single split_no=1 group) there are no earlier splits, so this is
+  // always null — the gate only ever applies to split 2 and beyond.
+  const blockingSplitNo = (splitNo) =>
+    splitNos
+      .filter((sn) => sn < splitNo)
+      .find((sn) => {
+        const priorLeg = form.assignments.find((a) => a.splitNo === sn)
+        return !priorLeg || priorLeg.trackingStatusId !== '13'
+      }) ?? null
 
   const updateStop = (id, updated) => {
     set({ stops: form.stops.map((s) => (s.id === id ? updated : s)) })
@@ -447,11 +460,21 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
               </div>
             )}
             <div className="mt-2 flex flex-wrap items-end gap-2 border-t border-slate-200 pt-2 dark:border-slate-800">
-              <Field label="Load Status" className="w-44">
+              <Field
+                label="Load Status"
+                className="w-44"
+                hint="In Transit is set by dispatching a split below, not from here"
+              >
                 <Select value={form.tripStatusId} onChange={(e) => set({ tripStatusId: e.target.value })}>
                   <option value="">Select…</option>
                   {(typeOptions[34] || []).map((o) => (
-                    <option key={o.id} value={o.id}>{o.label}</option>
+                    <option
+                      key={o.id}
+                      value={o.id}
+                      disabled={String(o.id) === '10' && form.tripStatusId !== '10'}
+                    >
+                      {o.label}
+                    </option>
                   ))}
                 </Select>
               </Field>
@@ -628,7 +651,17 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                 }
               >
                 <div className="pb-2">
-                  {leg ? (
+                  {blockingSplitNo(splitNo) ? (
+                    // Checked before `leg` on purpose: a later split can already
+                    // have a stray assignment (e.g. dispatched before this gate
+                    // existed, or a prior split got reopened after being marked
+                    // Completed) — that assignment stays locked out of view,
+                    // not just ungated create buttons, until every split ahead
+                    // of it is genuinely Completed(13).
+                    <p className="text-xs text-slate-400">
+                      Complete Split {blockingSplitNo(splitNo)} before dispatching this split.
+                    </p>
+                  ) : leg ? (
                     <div className="space-y-2 rounded-lg border border-slate-200 p-2.5 dark:border-slate-800">
                       {(() => {
                         const trackingLabel = (typeOptions[46] || []).find((o) => o.id === leg.trackingStatusId)?.label
@@ -664,6 +697,14 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                                 )}
                               </div>
                               <div className="flex items-center gap-2">
+                                {/* Once a leg exists, "Dispatch Load" (force straight to In
+                                    Transit) is gone for good — matching the reference
+                                    Loadx-Youngs-Frontend, where that action only exists for a
+                                    brand-new dispatch. "Edit" reopens the same modal, but it
+                                    only offers Save Load from here on (see CompanyDispatchModal/
+                                    BrokerDispatchModal); advancing an existing leg's status,
+                                    including to In Transit, is the Tracking Status dropdown
+                                    below, not this button. */}
                                 <Button size="sm" variant="ghost" onClick={() => openEditDispatch(leg)}>Edit</Button>
                                 <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleDeleteLeg(leg.id)}>Remove</Button>
                               </div>
