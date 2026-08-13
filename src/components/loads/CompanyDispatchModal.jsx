@@ -124,15 +124,12 @@ export function CompanyDispatchModal({ open, onClose, loadId, leg, splitNo, onSa
     return Object.keys(next).length === 0
   }
 
-  // forcedStatusId is set only by the "Dispatch Load" button (jumps to In
-  // Transit regardless of whatever the Tracking Status dropdown currently
-  // shows); "Save Load" passes null and just uses the dropdown's value.
-  const handleSubmit = async (forcedStatusId) => {
+  const handleSubmit = async () => {
     if (!validate()) {
       toast.error('Please fill required fields before dispatching')
       return
     }
-    const statusId = forcedStatusId || form.trackingStatusId
+    const statusId = form.trackingStatusId
     if (statusId === TRACKING_STATUS.COMPLETED && (!form.completeDt || !form.completeOutDt)) {
       toast.error('Enter the completion In Time and Out Time')
       return
@@ -174,19 +171,10 @@ export function CompanyDispatchModal({ open, onClose, loadId, leg, splitNo, onSa
       footer={
         <>
           <Button variant="secondary" onClick={onClose} disabled={saving}>Cancel</Button>
-          {/* Matches the reference Loadx-Youngs-Frontend's DispatchLoadModal:
-              "Dispatch Load" (forces tracking status straight to In Transit)
-              only exists for a brand-new dispatch — gated on `!editMode`
-              there, `!leg` here — never on the current tracking status. Once
-              a leg already exists, only a plain save is offered; advancing
-              an existing leg's status from here on is the split card's
-              inline Tracking Status dropdown's job, not this modal's. */}
-          {!leg && (
-            <Button variant="secondary" onClick={() => handleSubmit(TRACKING_STATUS.IN_TRANSIT)} disabled={saving}>
-              {saving ? 'Saving…' : 'Dispatch Load'}
-            </Button>
-          )}
-          <Button onClick={() => handleSubmit(null)} disabled={saving}>{saving ? 'Saving…' : 'Save Load'}</Button>
+          {/* Only "Save Load" is offered — advancing a leg's tracking status
+              (including straight to In Transit) is the split card's inline
+              Tracking Status dropdown's job, not this modal's. */}
+          <Button onClick={handleSubmit} disabled={saving}>{saving ? 'Saving…' : 'Save Load'}</Button>
         </>
       }
     >
