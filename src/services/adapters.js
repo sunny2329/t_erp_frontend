@@ -1272,6 +1272,7 @@ function assignmentFromApi(row) {
     secondaryDriverPhone: row.secondary_driver_phone || '',
     vehicleNo: row.vehicle_no || '',
     trailerNo: row.trailer_no || '',
+    dispatchRemark: row.dispatch_remark || '',
     stopPoints: Array.isArray(row.stop_points) ? row.stop_points.map((p) => idStr(p)) : [],
   }
 }
@@ -1299,6 +1300,7 @@ export const assignmentDetailAdapter = {
     secondary_driver_phone: form.secondaryDriverPhone || null,
     vehicle_no: form.vehicleNo || null,
     trailer_no: form.trailerNo || null,
+    dispatch_remark: form.dispatchRemark || null,
   }),
 }
 

@@ -5,6 +5,7 @@ import { Modal } from '../ui/Modal'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
 import { Select } from '../ui/Select'
+import { Textarea } from '../ui/Textarea'
 import { Button } from '../ui/Button'
 import { Section } from '../ui/Section'
 import { useData } from '../../context/DataContext'
@@ -35,7 +36,7 @@ function blankForm() {
     // on the split card itself (see LoadEditDrawer's per-leg "Tracking
     // Status"/"Dispatch" control), same two-step shape as the reference.
     dispatchStartDt: '', dispatchEndDt: '', trackingStatusId: '',
-    completeDt: '', completeOutDt: '',
+    completeDt: '', completeOutDt: '', dispatchRemark: '',
   }
 }
 
@@ -266,6 +267,9 @@ export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadS
               </>
             )}
           </div>
+          <Field label="Dispatch Notes" className="mt-3">
+            <Textarea rows={2} value={form.dispatchRemark} onChange={(e) => set({ dispatchRemark: e.target.value })} />
+          </Field>
         </Section>
 
         {routeChips.length > 0 && (
