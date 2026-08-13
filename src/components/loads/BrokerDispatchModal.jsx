@@ -12,6 +12,13 @@ import { loadAssignmentsApi } from '../../services/dispatchApi'
 import { assignmentDetailAdapter } from '../../services/adapters'
 import { getLocationLabel } from '../../utils/loadHelpers'
 
+const CONFLICT_ASSET_LABEL = { vehicle: 'Vehicle', trailer: 'Trailer', driver: 'Driver' }
+function formatConflictMessage(conflicts) {
+  return conflicts
+    .map((c) => `${CONFLICT_ASSET_LABEL[c.type]} ${c.label} is currently ${c.status} on Load ${c.loadNumber}.`)
+    .join('\n')
+}
+
 // type_master(type_id=46) — confirmed live: 5 = "In Transit", 13 = "Completed".
 const TRACKING_STATUS = { IN_TRANSIT: '5', COMPLETED: '13' }
 
@@ -33,6 +40,7 @@ export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadS
   const [form, setForm] = useState(blankForm())
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
+  const [conflictConfirm, setConflictConfirm] = useState(null)
 
   useEffect(() => {
     if (!open) return
@@ -46,6 +54,29 @@ export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadS
   }, [open, leg])
 
   const set = (patch) => setForm((f) => ({ ...f, ...patch }))
+
+  // Same conflict check as CompanyDispatchModal — broker dispatch was
+  // missing this entirely (only company dispatch had it), meaning a
+  // driver/vehicle/trailer on file for an external carrier could be
+  // double-booked across two loads with no warning. checkConflicts only
+  // looks at real FK ids (driverId1/vehicleId/trailerId), so the free-text
+  // driverName/vehicleNo/trailerNo fields below (used when a carrier has no
+  // assets on file) aren't and can't be checked this way.
+  const checkConflictsFor = async (fields) => {
+    try {
+      return await loadAssignmentsApi.checkConflicts(loadId, fields)
+    } catch {
+      return { hasConflicts: false, conflicts: [] }
+    }
+  }
+  const checkForField = async (patch) => {
+    const next = { ...form, ...patch }
+    const result = await checkConflictsFor(next)
+    if (result.hasConflicts) {
+      toast(formatConflictMessage(result.conflicts), { icon: '⚠️', duration: 6000 })
+    }
+  }
+  const confirmConflict = (message) => new Promise((resolve) => setConflictConfirm({ message, resolve }))
 
   const externalCarriers = carriers.filter((c) => c.authorityType === 2 && c.active)
   const carrierDrivers = drivers.filter((d) => d.carrierId === form.carrierId && d.active)
@@ -81,6 +112,13 @@ export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadS
       toast.error('Enter the completion In Time and Out Time')
       return
     }
+
+    const conflictResult = await checkConflictsFor(form)
+    if (conflictResult.hasConflicts) {
+      const proceed = await confirmConflict(formatConflictMessage(conflictResult.conflicts))
+      if (!proceed) return
+    }
+
     setSaving(true)
     try {
       const payload = { ...assignmentDetailAdapter.toApi({ ...form, trackingStatusId: statusId }), is_external: true }
@@ -106,6 +144,7 @@ export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadS
     .map((s) => (s.locationId ? getLocationLabel(s.locationId, locations || []) : s.stopType || '—'))
 
   return (
+    <>
     <Modal
       open={open}
       onClose={onClose}
@@ -147,7 +186,7 @@ export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadS
           <Section title="Assigned assets (optional)" description="Existing assets on file for this carrier">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <Field label="Driver">
-                <Select value={form.driverId1} onChange={(e) => set({ driverId1: e.target.value })}>
+                <Select value={form.driverId1} onChange={(e) => { set({ driverId1: e.target.value }); checkForField({ driverId1: e.target.value }) }}>
                   <option value="">None on file</option>
                   {carrierDrivers.map((d) => (
                     <option key={d.id} value={d.id}>{d.firstName} {d.lastName}</option>
@@ -155,7 +194,7 @@ export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadS
                 </Select>
               </Field>
               <Field label="Vehicle">
-                <Select value={form.vehicleId} onChange={(e) => set({ vehicleId: e.target.value })}>
+                <Select value={form.vehicleId} onChange={(e) => { set({ vehicleId: e.target.value }); checkForField({ vehicleId: e.target.value }) }}>
                   <option value="">None on file</option>
                   {carrierVehicles.map((v) => (
                     <option key={v.id} value={v.id}>{v.regNumber}</option>
@@ -163,7 +202,7 @@ export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadS
                 </Select>
               </Field>
               <Field label="Trailer">
-                <Select value={form.trailerId} onChange={(e) => set({ trailerId: e.target.value })}>
+                <Select value={form.trailerId} onChange={(e) => { set({ trailerId: e.target.value }); checkForField({ trailerId: e.target.value }) }}>
                   <option value="">None on file</option>
                   {carrierTrailers.map((t) => (
                     <option key={t.id} value={t.id}>{t.name}</option>
@@ -250,5 +289,23 @@ export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadS
         )}
       </div>
     </Modal>
+
+    {conflictConfirm && (
+      <Modal
+        open
+        onClose={() => { conflictConfirm.resolve(false); setConflictConfirm(null) }}
+        title="Dispatch Conflict"
+        size="md"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => { conflictConfirm.resolve(false); setConflictConfirm(null) }}>No</Button>
+            <Button onClick={() => { conflictConfirm.resolve(true); setConflictConfirm(null) }}>Yes, continue</Button>
+          </>
+        }
+      >
+        <p className="whitespace-pre-line text-sm text-slate-600 dark:text-slate-300">{conflictConfirm.message}</p>
+      </Modal>
+    )}
+    </>
   )
 }

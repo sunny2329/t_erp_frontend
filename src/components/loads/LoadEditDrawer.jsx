@@ -706,7 +706,16 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                                     including to In Transit, is the Tracking Status dropdown
                                     below, not this button. */}
                                 <Button size="sm" variant="ghost" onClick={() => openEditDispatch(leg)}>Edit</Button>
-                                <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleDeleteLeg(leg.id)}>Remove</Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="text-red-500"
+                                  disabled={!!leg.trackingStatusId}
+                                  title={leg.trackingStatusId ? 'Tracking has already started — cannot clear this assignment' : undefined}
+                                  onClick={() => handleDeleteLeg(leg.id)}
+                                >
+                                  Remove
+                                </Button>
                               </div>
                             </div>
 
