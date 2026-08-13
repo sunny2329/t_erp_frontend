@@ -27,7 +27,14 @@ function blankForm() {
     carrierId: '', driverId1: '', vehicleId: '', trailerId: '',
     driverName: '', driverPhone: '', secondaryDriverName: '', secondaryDriverPhone: '',
     vehicleNo: '', trailerNo: '', dispatcherId: '',
-    dispatchStartDt: '', dispatchEndDt: '', trackingStatusId: '1',
+    // Left blank on purpose — matches the reference Loadx-Youngs-Frontend's
+    // plain "Save"/"Save Load" path (as opposed to its separate "Dispatch
+    // Load" button): saving a brand-new assignment with no tracking status
+    // set leaves the load Scheduled(6), not In Transit. Actually dispatching
+    // it — flipping tracking to In Transit(5) — is a separate, later action
+    // on the split card itself (see LoadEditDrawer's per-leg "Tracking
+    // Status"/"Dispatch" control), same two-step shape as the reference.
+    dispatchStartDt: '', dispatchEndDt: '', trackingStatusId: '',
     completeDt: '', completeOutDt: '',
   }
 }

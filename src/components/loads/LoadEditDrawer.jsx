@@ -351,6 +351,13 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
     }
   }
 
+  // The explicit "Dispatch" action for an already-saved-but-not-yet-moving
+  // leg (trackingStatusId still blank, i.e. just Scheduled) — one click to
+  // In Transit(5), same transition the Tracking Status dropdown offers, just
+  // surfaced as its own button so "dispatch this" doesn't require knowing to
+  // dig into the dropdown first.
+  const handleDispatchLeg = (leg) => handleTrackingStatusChange(leg, '5')
+
   const submitCompletePrompt = async () => {
     if (!completePrompt.completeDt || !completePrompt.completeOutDt) {
       toast.error('Enter the completion In Time and Out Time')
@@ -725,6 +732,11 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                                   <option key={o.id} value={o.id}>{o.label}</option>
                                 ))}
                               </Select>
+                              {!leg.trackingStatusId && (
+                                <Button size="sm" onClick={() => handleDispatchLeg(leg)}>
+                                  Dispatch
+                                </Button>
+                              )}
                             </div>
                           </>
                         )
