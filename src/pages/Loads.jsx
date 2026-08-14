@@ -10,7 +10,7 @@ import { Badge } from '../components/ui/Badge'
 import { DataTable } from '../components/ui/DataTable'
 import { LoadDrawer } from '../components/loads/LoadDrawer'
 import { TRIP_STATUSES } from '../mocks/constants'
-import { getCustomer, getPickupStop, getStopCity, getCarrierDriverLabel } from '../utils/loadHelpers'
+import { getCustomer, getPickupStop, getStopCity, getCarrierDriverLabel, getRateConNumber } from '../utils/loadHelpers'
 
 export default function Loads() {
   const { loads, customers, carriers, drivers, locations } = useData()
@@ -38,11 +38,14 @@ export default function Loads() {
   const filtered = useMemo(() => {
     return loads.filter((l) => {
       const customer = getCustomer(l, customers)
+      const customerRef = getRateConNumber(l)
+      const q = search.toLowerCase()
       const matchesSearch =
         !search ||
-        l.loadNumber.toLowerCase().includes(search.toLowerCase()) ||
-        (customer?.name || '').toLowerCase().includes(search.toLowerCase()) ||
-        (l.poNumber || '').toLowerCase().includes(search.toLowerCase())
+        l.loadNumber.toLowerCase().includes(q) ||
+        (customer?.name || '').toLowerCase().includes(q) ||
+        (customerRef !== '—' && customerRef.toLowerCase().includes(q)) ||
+        l.stops.some((s) => (s.poNumber || '').toLowerCase().includes(q))
       const matchesStatus = status === 'All' || l.tripStatus === status
       const pickupDate = getPickupStop(l)?.stopDate
       const matchesFrom = !dateFrom || (pickupDate && pickupDate >= dateFrom)
@@ -63,6 +66,7 @@ export default function Loads() {
   const columns = [
     { key: 'loadNumber', header: 'Load #', render: (l) => <span className="font-medium text-slate-800 dark:text-slate-100">{l.loadNumber}</span> },
     { key: 'customer', header: 'Customer', render: (l) => getCustomer(l, customers)?.name || '—', filterValue: (l) => getCustomer(l, customers)?.name || '' },
+    { key: 'customerRef', header: 'Customer Ref #', render: (l) => getRateConNumber(l), filterValue: (l) => getRateConNumber(l) },
     { key: 'pickup', header: 'Pickup', render: (l) => getStopCity(l, 'Pickup', locations), filterValue: (l) => getStopCity(l, 'Pickup', locations) },
     { key: 'delivery', header: 'Delivery', render: (l) => getStopCity(l, 'Delivery', locations), filterValue: (l) => getStopCity(l, 'Delivery', locations) },
     { key: 'trip', header: 'Trip status', render: (l) => <Badge status={l.tripStatus} />, filterValue: (l) => l.tripStatus },
@@ -127,7 +131,7 @@ export default function Loads() {
         onRowClick={openEdit}
         search={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Search load # / customer / PO..."
+        searchPlaceholder="Search load # / customer / customer ref / PO..."
         emptyLabel="No loads match your filters."
       />
 
