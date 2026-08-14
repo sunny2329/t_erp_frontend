@@ -472,9 +472,6 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                   ))}
                 </Select>
               </Field>
-              <Field label="Load Date" className="w-44">
-                <Input type="date" value={form.loadDt} onChange={(e) => set({ loadDt: e.target.value })} />
-              </Field>
               <div className="ml-auto flex gap-2">
                 <Button size="sm" variant="secondary" onClick={() => setDocumentsOpen(true)}>
                   <FileText className="h-3.5 w-3.5" /> Documents

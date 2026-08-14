@@ -1157,7 +1157,6 @@ export function blankLoadDetail() {
     // Same value on every stop (see load_stops.customer_ref) — exposed as one
     // load-level field instead of a per-stop one; toApi below fans it out.
     customerRef: '',
-    loadDt: '',
     tripStatusId: '5',
     tripStatus: 'Open',
     trackingStatus: 'Not Tracking',
@@ -1313,7 +1312,6 @@ export const loadDetailAdapter = {
     // has one set (rather than always row.stops[0], in case an older load
     // has it recorded unevenly across stops).
     customerRef: (row.stops || []).find((s) => s.customer_ref)?.customer_ref || '',
-    loadDt: dateOnly(row.load_dt),
     tripStatusId: idStr(row.trip_status_type_id),
     tripStatus: tripStatusFromApi(row.trip_status_type_id),
     trackingStatus: trackingStatusFromApi(row.tracking_status_type_id),
@@ -1356,7 +1354,6 @@ export const loadDetailAdapter = {
     // what's sent (matches the reference's ss_save_loads); on update it's
     // the manual Load Status field — see LoadEditDrawer.jsx.
     trip_status_type_id: idNum(form.tripStatusId),
-    load_dt: form.loadDt || null,
     primary_fee: form.rate.primaryFee === '' ? null : Number(form.rate.primaryFee),
     fee_type_id: idNum(form.rate.feeTypeId),
     tendered_miles: form.rate.tenderedMiles === '' ? null : Number(form.rate.tenderedMiles),

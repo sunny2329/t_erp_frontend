@@ -199,9 +199,6 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
               />
             </Field>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Load Date">
-                <Input type="date" value={form.loadDt} onChange={(e) => set({ loadDt: e.target.value })} />
-              </Field>
               <Field label="Customer Ref #" required error={errors.customerRef} hint={!errors.customerRef ? 'Same reference applied to every stop' : undefined}>
                 <Input value={form.customerRef} onChange={(e) => { set({ customerRef: e.target.value }); setErrors((prev) => ({ ...prev, customerRef: undefined })) }} error={errors.customerRef} />
               </Field>
