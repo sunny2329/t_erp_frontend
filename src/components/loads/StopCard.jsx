@@ -41,7 +41,7 @@ function formatStopWindow(stop) {
 // display-mode toggle: onChange/onRemove/onMoveUp/onMoveDown/onSplit and
 // every prop below behave exactly as before regardless of which mode is
 // showing.
-export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onMoveDown, locationOptions, onAddLocation, headerCommodity, isReefer, errors = {}, onSplit }) {
+export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onMoveDown, locationOptions, onAddLocation, headerCommodity, isReefer, errors = {}, onSplit, showLocationCityState = false }) {
   const { typeOptions } = useData()
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [editing, setEditing] = useState(() => !stop.locationId || Object.keys(errors).length > 0)
@@ -144,6 +144,16 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
                 error={errors.locationId}
               />
             </Field>
+            {showLocationCityState && (
+              <>
+                <Field label="City">
+                  <Input value={selectedLocation?.city || ''} disabled />
+                </Field>
+                <Field label="State">
+                  <Input value={selectedLocation?.state || ''} disabled />
+                </Field>
+              </>
+            )}
 
             <Field label="Stop Date" required error={errors.stopDate}>
               <Input type="date" value={stop.stopDate} onChange={(e) => set({ stopDate: e.target.value })} error={errors.stopDate} />
