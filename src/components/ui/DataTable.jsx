@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 
-const PAGE_SIZE = 25
+const PAGE_SIZE = 10
 
 // col.filterValue(row) lets a column with a non-text render (badges,
 // currency, links) still be matched by its column-search box — falls back
