@@ -107,10 +107,13 @@ export default function Dashboard() {
   const filtered = useMemo(() => {
     return panelFiltered.filter((l) => {
       const customer = getCustomer(l, customers)
+      const rateConNumber = getRateConNumber(l)
+      const q = search.toLowerCase()
       const matchesSearch =
         !search ||
-        l.loadNumber.toLowerCase().includes(search.toLowerCase()) ||
-        (customer?.name || '').toLowerCase().includes(search.toLowerCase())
+        l.loadNumber.toLowerCase().includes(q) ||
+        (customer?.name || '').toLowerCase().includes(q) ||
+        (rateConNumber !== '—' && rateConNumber.toLowerCase().includes(q))
       const matchesStatus = statusFilter === 'All' || l.tripStatus === statusFilter
       return matchesSearch && matchesStatus
     })
@@ -144,7 +147,7 @@ export default function Dashboard() {
     { key: 'route', header: 'Route', render: (l) => getRouteLabel(l, locations), filterValue: (l) => getRouteLabel(l, locations) },
     { key: 'tripStatus', header: 'Status', render: (l) => <Badge status={l.tripStatus} />, filterValue: (l) => l.tripStatus },
     { key: 'trackingStatus', header: 'Tracking Status', render: (l) => <Badge status={l.trackingStatus} />, filterValue: (l) => l.trackingStatus },
-    { key: 'rateConNumber', header: 'Rate Con Number', render: (l) => getRateConNumber(l) },
+    { key: 'rateConNumber', header: 'Rate Con Number', render: (l) => getRateConNumber(l), filterValue: (l) => getRateConNumber(l) },
     { key: 'customer', header: 'Customer', render: (l) => getCustomer(l, customers)?.name || '—', filterValue: (l) => getCustomer(l, customers)?.name || '' },
     { key: 'carrier', header: 'Dispatch Carrier', render: (l) => getCarrierLabel(l, carriers) },
     { key: 'driver', header: 'Driver', render: (l) => getDriverLabel(l, drivers) },
@@ -284,7 +287,7 @@ export default function Dashboard() {
           onRowClick={openEdit}
           search={search}
           onSearchChange={setSearch}
-          searchPlaceholder="Search load # / customer..."
+          searchPlaceholder="Search load # / customer / rate con number..."
           emptyLabel={mastersLoading ? 'Loading…' : 'No loads found.'}
           columnSearch
           toolbar={
