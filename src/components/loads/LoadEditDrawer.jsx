@@ -602,17 +602,6 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                   </Field>
                 </div>
               </Section>
-
-              <Section title="Notes" collapsible>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  <Field label="Customer Load Notes">
-                    <Textarea rows={2} value={form.notes.customerLoadNotes} onChange={(e) => setNotes({ customerLoadNotes: e.target.value })} />
-                  </Field>
-                  <Field label="Dispatch Notes">
-                    <Textarea rows={2} value={form.notes.dispatchNotes} onChange={(e) => setNotes({ dispatchNotes: e.target.value })} />
-                  </Field>
-                </div>
-              </Section>
             </div>
 
             {/* Stops + Dispatch, grouped by split_no — one group = one leg */}
@@ -805,6 +794,17 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
           })}
             </div>
           </div>
+
+          <Section title="Notes" collapsible>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <Field label="Customer Load Notes">
+                <Textarea rows={2} value={form.notes.customerLoadNotes} onChange={(e) => setNotes({ customerLoadNotes: e.target.value })} />
+              </Field>
+              <Field label="Dispatch Notes">
+                <Textarea rows={2} value={form.notes.dispatchNotes} onChange={(e) => setNotes({ dispatchNotes: e.target.value })} />
+              </Field>
+            </div>
+          </Section>
         </div>
       </Drawer>
 

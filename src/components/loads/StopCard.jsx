@@ -133,9 +133,6 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
                 <option value="Delivery">Delivery</option>
               </Select>
             </Field>
-            <Field label="Sequence #">
-              <Input type="number" min={1} value={stop.sequence} onChange={(e) => set({ sequence: Number(e.target.value) })} />
-            </Field>
             <Field label="Location / Shipper" required error={errors.locationId} className="col-span-2">
               <SearchSelect
                 value={stop.locationId}
