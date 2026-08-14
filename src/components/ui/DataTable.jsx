@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react'
-import { Search } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
+
+const PAGE_SIZE = 25
 
 // col.filterValue(row) lets a column with a non-text render (badges,
 // currency, links) still be matched by its column-search box — falls back
@@ -21,8 +23,9 @@ export function DataTable({
   columnSearch = true,
 }) {
   const [columnFilters, setColumnFilters] = useState({})
+  const [page, setPage] = useState(1)
 
-  const visibleRows = useMemo(() => {
+  const filteredRows = useMemo(() => {
     const activeFilters = Object.entries(columnFilters).filter(([, v]) => v.trim())
     if (!activeFilters.length) return rows
     return rows.filter((row) =>
@@ -33,6 +36,17 @@ export function DataTable({
       }),
     )
   }, [rows, columns, columnFilters])
+
+  // Whatever narrowed the result set (external search/filters, or the
+  // column-search boxes below) should always land back on page 1 — staying
+  // on e.g. page 4 of a now-3-page result set would just show an empty table.
+  useEffect(() => {
+    setPage(1)
+  }, [rows, columnFilters])
+
+  const pageCount = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE))
+  const currentPage = Math.min(page, pageCount)
+  const visibleRows = filteredRows.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
   const setColumnFilter = (key, value) => setColumnFilters((prev) => ({ ...prev, [key]: value }))
 
@@ -111,6 +125,36 @@ export function DataTable({
           </tbody>
         </table>
       </div>
+      {filteredRows.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-4 py-2.5 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+          <span>
+            Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredRows.length)} of {filteredRows.length}
+          </span>
+          {pageCount > 1 && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="rounded p-1 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
+                title="Previous page"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </button>
+              <span>Page {currentPage} of {pageCount}</span>
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+                disabled={currentPage === pageCount}
+                className="rounded p-1 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
+                title="Next page"
+              >
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

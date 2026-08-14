@@ -180,7 +180,7 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
               <Input type="number" value={stop.weight} onChange={(e) => set({ weight: e.target.value })} />
             </Field>
             <Field label="Stop Action">
-              <TypeSelect options={typeOptions[19] || []} value={stop.stopActionId} onChange={(v) => set({ stopActionId: v })} placeholder="Live Load / Hook Trailer" />
+              <TypeSelect options={typeOptions[19] || []} value={stop.stopActionId} onChange={(v) => set({ stopActionId: v })} />
             </Field>
             <Field label="Reefer Mode">
               <TypeSelect options={typeOptions[21] || []} value={stop.reeferModeId} onChange={(v) => set({ reeferModeId: v })} />

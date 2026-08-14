@@ -109,7 +109,7 @@ export function SplitStopModal({ open, onClose, locationOptions, onAddLocation, 
           <Input type="number" value={form.weight} onChange={(e) => set({ weight: e.target.value })} />
         </Field>
         <Field label="Stop Action">
-          <TypeSelect options={typeOptions[19] || []} value={form.stopActionId} onChange={(v) => set({ stopActionId: v })} placeholder="Live Load / Hook Trailer" />
+          <TypeSelect options={typeOptions[19] || []} value={form.stopActionId} onChange={(v) => set({ stopActionId: v })} />
         </Field>
         <Field label="Reefer Mode">
           <TypeSelect options={typeOptions[21] || []} value={form.reeferModeId} onChange={(v) => set({ reeferModeId: v })} />
