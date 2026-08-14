@@ -56,11 +56,14 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
   const set = (patch) => onChange({ ...stop, ...patch })
   const selectedLocation = locationOptions.find((o) => o.value === stop.locationId)
   // Start/End Time are only required when both toggles are on — matches the
-  // reference Loadx-Youngs-Frontend's validateStopTimings exactly. Temp is
-  // required once the load's equipment is a reefer type and this stop's own
-  // reefer mode isn't explicitly Off (id 4) — same reference rule.
+  // reference Loadx-Youngs-Frontend's validateStopTimings exactly. The temp
+  // field shows once the load's equipment is a reefer type OR this stop has
+  // its own Reefer Mode picked — a dispatcher can set a stop to a reefer
+  // mode even on a non-reefer van — and is required unless that mode is
+  // explicitly Off (id 4).
   const timeRequired = stop.appointmentRequired && stop.scheduled
-  const tempRequired = !!isReefer && stop.reeferModeId !== '4'
+  const reeferModeActive = isReefer || !!stop.reeferModeId
+  const tempRequired = reeferModeActive && stop.reeferModeId !== '4'
 
   const headerActions = (
     <div className="flex items-center gap-1">
@@ -185,7 +188,7 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
             <Field label="Reefer Mode">
               <TypeSelect options={typeOptions[21] || []} value={stop.reeferModeId} onChange={(v) => set({ reeferModeId: v })} />
             </Field>
-            {isReefer && (
+            {reeferModeActive && (
               <Field label="Reefer Temp (°F)" required={tempRequired} error={errors.tempValue}>
                 <Input type="number" value={stop.tempValue} onChange={(e) => set({ tempValue: e.target.value })} error={errors.tempValue} />
               </Field>

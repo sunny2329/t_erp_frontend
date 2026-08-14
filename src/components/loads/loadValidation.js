@@ -33,9 +33,11 @@ export function validateLoadForm(form) {
       if (!s.startTime) se.startTime = 'Required'
       if (!s.endTime) se.endTime = 'Required'
     }
-    // Reefer temp only required once the load's equipment is a reefer type
-    // AND this stop's own reefer mode isn't explicitly Off.
-    if (isReefer && s.reeferModeId !== '4' && (s.tempValue === '' || s.tempValue == null)) {
+    // Reefer temp is required once the load's equipment is a reefer type OR
+    // this stop has its own Reefer Mode picked (a dispatcher can set a stop
+    // to a reefer mode even on a non-reefer-flagged van), as long as that
+    // mode isn't explicitly Off.
+    if ((isReefer || s.reeferModeId) && s.reeferModeId !== '4' && (s.tempValue === '' || s.tempValue == null)) {
       se.tempValue = 'Required'
     }
     if (Object.keys(se).length) errors.stopErrors[s.id] = se
