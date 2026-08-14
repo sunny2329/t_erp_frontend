@@ -8,6 +8,7 @@ import { Select } from '../ui/Select'
 import { Textarea } from '../ui/Textarea'
 import { Button } from '../ui/Button'
 import { Section } from '../ui/Section'
+import { DateTimeField } from '../ui/DateTimeField'
 import { useData } from '../../context/DataContext'
 import { loadAssignmentsApi } from '../../services/dispatchApi'
 import { assignmentDetailAdapter } from '../../services/adapters'
@@ -44,7 +45,7 @@ function blankForm() {
 // mechanics as CompanyDispatchModal (see splitNo there), plus is_external:true
 // and free-text driver/equipment fields for carriers with no assets on file.
 export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadStops, locations, onSaved }) {
-  const { carriers, drivers, vehicles, trailers, users, typeOptions } = useData()
+  const { carriers, drivers, vehicles, trailers, users } = useData()
   const [form, setForm] = useState(blankForm())
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
@@ -233,6 +234,11 @@ export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadS
         </Section>
 
         <Section title="Dispatch">
+          {/* Tracking Status itself isn't set here — it starts unset (auto)
+              on a new assignment and is only advanced afterward from the
+              split card's own Tracking Status dropdown (see
+              LoadEditDrawer's handleTrackingStatusChange), so this modal
+              can't leave it in a state that dropdown doesn't expect. */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Dispatcher">
               <Select value={form.dispatcherId} onChange={(e) => set({ dispatcherId: e.target.value })}>
@@ -242,28 +248,13 @@ export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadS
                 ))}
               </Select>
             </Field>
-            <Field label="Tracking Status">
-              <Select value={form.trackingStatusId} onChange={(e) => set({ trackingStatusId: e.target.value })}>
-                <option value="">Select…</option>
-                {(typeOptions[46] || []).map((o) => (
-                  <option key={o.id} value={o.id}>{o.label}</option>
-                ))}
-              </Select>
-            </Field>
-            <Field label="Dispatch Start Date/Time">
-              <Input type="datetime-local" value={form.dispatchStartDt} onChange={(e) => set({ dispatchStartDt: e.target.value })} />
-            </Field>
-            <Field label="Dispatch End Date/Time">
-              <Input type="datetime-local" value={form.dispatchEndDt} onChange={(e) => set({ dispatchEndDt: e.target.value })} />
-            </Field>
+            <div className="hidden sm:block" />
+            <DateTimeField label="Dispatch Start Date/Time" value={form.dispatchStartDt} onChange={(v) => set({ dispatchStartDt: v })} />
+            <DateTimeField label="Dispatch End Date/Time" value={form.dispatchEndDt} onChange={(v) => set({ dispatchEndDt: v })} />
             {form.trackingStatusId === TRACKING_STATUS.COMPLETED && (
               <>
-                <Field label="Complete In Time" required hint="When the driver checked in for completion">
-                  <Input type="datetime-local" value={form.completeDt} onChange={(e) => set({ completeDt: e.target.value })} />
-                </Field>
-                <Field label="Complete Out Time" required hint="When the driver checked out">
-                  <Input type="datetime-local" value={form.completeOutDt} onChange={(e) => set({ completeOutDt: e.target.value })} />
-                </Field>
+                <DateTimeField label="Complete In Time" required hint="When the driver checked in for completion" value={form.completeDt} onChange={(v) => set({ completeDt: v })} />
+                <DateTimeField label="Complete Out Time" required hint="When the driver checked out" value={form.completeOutDt} onChange={(v) => set({ completeOutDt: v })} />
               </>
             )}
           </div>

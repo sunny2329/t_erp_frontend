@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Modal } from '../ui/Modal'
 import { Field } from '../ui/Field'
-import { Input } from '../ui/Input'
 import { Select } from '../ui/Select'
 import { Textarea } from '../ui/Textarea'
 import { Button } from '../ui/Button'
 import { Section } from '../ui/Section'
+import { DateTimeField } from '../ui/DateTimeField'
 import { useData } from '../../context/DataContext'
 import { loadAssignmentsApi, driverVehicleMappingApi } from '../../services/dispatchApi'
 import { assignmentDetailAdapter } from '../../services/adapters'
@@ -42,7 +42,7 @@ function blankForm() {
 // stops currently carry that split_no, so this modal never needs to know
 // about individual stop ids.
 export function CompanyDispatchModal({ open, onClose, loadId, leg, splitNo, onSaved }) {
-  const { carriers, vehicles, drivers, trailers, users, typeOptions } = useData()
+  const { carriers, vehicles, drivers, trailers, users } = useData()
   const [form, setForm] = useState(blankForm())
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
@@ -237,33 +237,22 @@ export function CompanyDispatchModal({ open, onClose, loadId, leg, splitNo, onSa
                 ))}
               </Select>
             </Field>
-            <Field label="Tracking Status">
-              <Select value={form.trackingStatusId} onChange={(e) => set({ trackingStatusId: e.target.value })}>
-                <option value="">Select…</option>
-                {(typeOptions[46] || []).map((o) => (
-                  <option key={o.id} value={o.id}>{o.label}</option>
-                ))}
-              </Select>
-            </Field>
           </div>
         </Section>
 
         <Section title="Schedule">
+          {/* Tracking Status itself isn't set here — it starts unset (auto)
+              on a new assignment and is only advanced afterward from the
+              split card's own Tracking Status dropdown (see
+              LoadEditDrawer's handleTrackingStatusChange), so this modal
+              can't leave it in a state that dropdown doesn't expect. */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Dispatch Start Date/Time">
-              <Input type="datetime-local" value={form.dispatchStartDt} onChange={(e) => set({ dispatchStartDt: e.target.value })} />
-            </Field>
-            <Field label="Dispatch End Date/Time">
-              <Input type="datetime-local" value={form.dispatchEndDt} onChange={(e) => set({ dispatchEndDt: e.target.value })} />
-            </Field>
+            <DateTimeField label="Dispatch Start Date/Time" value={form.dispatchStartDt} onChange={(v) => set({ dispatchStartDt: v })} />
+            <DateTimeField label="Dispatch End Date/Time" value={form.dispatchEndDt} onChange={(v) => set({ dispatchEndDt: v })} />
             {form.trackingStatusId === TRACKING_STATUS.COMPLETED && (
               <>
-                <Field label="Complete In Time" required hint="When the driver checked in for completion">
-                  <Input type="datetime-local" value={form.completeDt} onChange={(e) => set({ completeDt: e.target.value })} />
-                </Field>
-                <Field label="Complete Out Time" required hint="When the driver checked out">
-                  <Input type="datetime-local" value={form.completeOutDt} onChange={(e) => set({ completeOutDt: e.target.value })} />
-                </Field>
+                <DateTimeField label="Complete In Time" required hint="When the driver checked in for completion" value={form.completeDt} onChange={(v) => set({ completeDt: v })} />
+                <DateTimeField label="Complete Out Time" required hint="When the driver checked out" value={form.completeOutDt} onChange={(v) => set({ completeOutDt: v })} />
               </>
             )}
           </div>

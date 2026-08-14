@@ -5,6 +5,7 @@ import { Drawer } from '../ui/Drawer'
 import { Modal } from '../ui/Modal'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
+import { DateTimeField } from '../ui/DateTimeField'
 import { Select } from '../ui/Select'
 import { Textarea } from '../ui/Textarea'
 import { Toggle } from '../ui/Toggle'
@@ -886,20 +887,20 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
           }
         >
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Complete In Time" required hint="When the driver checked in for completion">
-              <Input
-                type="datetime-local"
-                value={completePrompt.completeDt}
-                onChange={(e) => setCompletePrompt((p) => ({ ...p, completeDt: e.target.value }))}
-              />
-            </Field>
-            <Field label="Complete Out Time" required hint="When the driver checked out">
-              <Input
-                type="datetime-local"
-                value={completePrompt.completeOutDt}
-                onChange={(e) => setCompletePrompt((p) => ({ ...p, completeOutDt: e.target.value }))}
-              />
-            </Field>
+            <DateTimeField
+              label="Complete In Time"
+              required
+              hint="When the driver checked in for completion"
+              value={completePrompt.completeDt}
+              onChange={(v) => setCompletePrompt((p) => ({ ...p, completeDt: v }))}
+            />
+            <DateTimeField
+              label="Complete Out Time"
+              required
+              hint="When the driver checked out"
+              value={completePrompt.completeOutDt}
+              onChange={(v) => setCompletePrompt((p) => ({ ...p, completeOutDt: v }))}
+            />
           </div>
         </Modal>
       )}
