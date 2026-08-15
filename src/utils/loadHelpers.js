@@ -211,3 +211,10 @@ export function formatDateTime(value) {
   if (Number.isNaN(d.getTime())) return value
   return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
 }
+
+export function formatTime(value) {
+  if (!value) return '—'
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return value
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+}

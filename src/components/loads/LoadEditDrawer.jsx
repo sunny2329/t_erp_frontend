@@ -2,10 +2,8 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Plus, Truck, Building2, FileText, MessageSquare, FileCheck2, FileSignature, ScrollText, Send, History } from 'lucide-react'
 import { Drawer } from '../ui/Drawer'
-import { Modal } from '../ui/Modal'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
-import { DateTimeField } from '../ui/DateTimeField'
 import { Select } from '../ui/Select'
 import { Textarea } from '../ui/Textarea'
 import { Toggle } from '../ui/Toggle'
@@ -26,7 +24,7 @@ import { SendRateConModal } from './SendRateConModal'
 import { loadsApi } from '../../services/masterApi'
 import { loadAssignmentsApi } from '../../services/dispatchApi'
 import { loadDetailAdapter } from '../../services/adapters'
-import { getLocationLabel, formatDateTime, getActiveLeg } from '../../utils/loadHelpers'
+import { getLocationLabel, formatDate, formatDateTime, formatTime, getActiveLeg } from '../../utils/loadHelpers'
 import { blankStop, isReeferVanType } from './stopHelpers'
 import { validateLoadForm } from './loadValidation'
 import { pdfApi, openPdfBlob } from '../../services/pdfApi'
@@ -88,7 +86,6 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
   const [historyOpen, setHistoryOpen] = useState(false)
   const [pdfBusy, setPdfBusy] = useState(null)
   const [rateConTarget, setRateConTarget] = useState(null)
-  const [completePrompt, setCompletePrompt] = useState(null)
 
   useEffect(() => {
     if (!open || !loadId) return
@@ -349,53 +346,6 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
     }
   }
 
-  // Inline tracking-status update straight from a leg's card — no need to
-  // open the full Edit Dispatch modal just to move a leg along, matching
-  // the reference Loadx-Youngs-Frontend's per-split "Tracking Status"
-  // dropdown. Moving to Completed(13) still needs Complete In/Out time
-  // (same requirement as CompanyDispatchModal/BrokerDispatchModal) — if the
-  // leg doesn't already have both, a small prompt collects them first
-  // instead of saving right away.
-  const handleTrackingStatusChange = async (leg, statusId) => {
-    if (statusId === '13' && (!leg.completeDt || !leg.completeOutDt)) {
-      setCompletePrompt({ leg, completeDt: leg.completeDt || '', completeOutDt: leg.completeOutDt || '' })
-      return
-    }
-    try {
-      await loadAssignmentsApi.update(loadId, leg.id, { tracking_status_type_id: statusId ? Number(statusId) : null })
-      toast.success('Tracking status updated')
-      refetchLoad()
-    } catch (err) {
-      toast.error(err.message || 'Failed to update tracking status')
-    }
-  }
-
-  // The explicit "Dispatch" action for an already-saved-but-not-yet-moving
-  // leg (trackingStatusId still blank, i.e. just Scheduled) — one click to
-  // In Transit(5), same transition the Tracking Status dropdown offers, just
-  // surfaced as its own button so "dispatch this" doesn't require knowing to
-  // dig into the dropdown first.
-  const handleDispatchLeg = (leg) => handleTrackingStatusChange(leg, '5')
-
-  const submitCompletePrompt = async () => {
-    if (!completePrompt.completeDt || !completePrompt.completeOutDt) {
-      toast.error('Enter the completion In Time and Out Time')
-      return
-    }
-    try {
-      await loadAssignmentsApi.update(loadId, completePrompt.leg.id, {
-        tracking_status_type_id: 13,
-        complete_dt: completePrompt.completeDt,
-        complete_out_dt: completePrompt.completeOutDt,
-      })
-      toast.success('Tracking status updated')
-      setCompletePrompt(null)
-      refetchLoad()
-    } catch (err) {
-      toast.error(err.message || 'Failed to update tracking status')
-    }
-  }
-
   // --- Header stats strip ---
   const customerEntity = customers.find((c) => c.id === form.customerId)
   const pickupStop = sortedStops.find((s) => s.stopType === 'Pickup') || sortedStops[0]
@@ -643,7 +593,6 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                   {leg ? (
                     <div className="space-y-2 rounded-lg border border-slate-200 p-2.5 dark:border-slate-800">
                       {(() => {
-                        const trackingLabel = (typeOptions[46] || []).find((o) => o.id === leg.trackingStatusId)?.label
                         const isCompleted = leg.trackingStatusId === '13'
                         const primaryDriver = drivers.find((x) => x.id === leg.driverId1)
                         const primaryDriverLabel = primaryDriver ? `${primaryDriver.firstName} ${primaryDriver.lastName}` : leg.driverName
@@ -661,29 +610,14 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                                   {carriers.find((c) => c.id === leg.carrierId)?.name || '—'}
                                 </span>
                                 <span className="text-xs font-normal text-slate-400">({leg.isExternal ? 'Broker' : 'Company'})</span>
-                                {trackingLabel && (
-                                  <span
-                                    className={`rounded-full px-2 py-0.5 text-[11px] ${
-                                      isCompleted
-                                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
-                                        : leg.trackingStatusId === '5'
-                                          ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
-                                          : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
-                                    }`}
-                                  >
-                                    {trackingLabel}
-                                  </span>
-                                )}
                               </div>
                               <div className="flex items-center gap-2">
                                 {/* Once a leg exists, "Dispatch Load" (force straight to In
                                     Transit) is gone for good — matching the reference
                                     Loadx-Youngs-Frontend, where that action only exists for a
-                                    brand-new dispatch. "Edit" reopens the same modal, but it
-                                    only offers Save Load from here on (see CompanyDispatchModal/
-                                    BrokerDispatchModal); advancing an existing leg's status,
-                                    including to In Transit, is the Tracking Status dropdown
-                                    below, not this button. */}
+                                    brand-new dispatch. "Edit" reopens the same modal, which is
+                                    also where an existing leg's Tracking Status (In Transit,
+                                    Completed, ...) gets advanced now — not from this card. */}
                                 <Button size="sm" variant="ghost" onClick={() => openEditDispatch(leg)}>Edit</Button>
                                 <Button
                                   size="sm"
@@ -711,27 +645,10 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                               <LegDetailItem label="Vehicle" value={vehicleLabel} />
                               <LegDetailItem label="Trailer" value={trailerLabel} />
                               <LegDetailItem label="Dispatcher" value={dispatcherLabel} />
-                              <LegDetailItem label="Dispatch Start" value={formatDateTime(leg.dispatchStartDt)} />
-                              <LegDetailItem label="Dispatch End" value={formatDateTime(leg.dispatchEndDt)} />
-                            </div>
-
-                            <div className="flex items-center gap-2 border-t border-slate-100 pt-2 dark:border-slate-800/60">
-                              <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Tracking Status</span>
-                              <Select
-                                value={leg.trackingStatusId}
-                                onChange={(e) => handleTrackingStatusChange(leg, e.target.value)}
-                                className="w-48"
-                              >
-                                <option value="">Select…</option>
-                                {(typeOptions[46] || []).map((o) => (
-                                  <option key={o.id} value={o.id}>{o.label}</option>
-                                ))}
-                              </Select>
-                              {!leg.trackingStatusId && (
-                                <Button size="sm" onClick={() => handleDispatchLeg(leg)}>
-                                  Dispatch
-                                </Button>
-                              )}
+                              <LegDetailItem label="Dispatch Start Date" value={formatDate(leg.dispatchStartDt)} />
+                              <LegDetailItem label="Dispatch Start Time" value={formatTime(leg.dispatchStartDt)} />
+                              <LegDetailItem label="Dispatch End Date" value={formatDate(leg.dispatchEndDt)} />
+                              <LegDetailItem label="Dispatch End Time" value={formatTime(leg.dispatchEndDt)} />
                             </div>
                           </>
                         )
@@ -903,39 +820,6 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
         loadId={loadId}
         loadNumber={form.loadNumber}
       />
-
-      {completePrompt && (
-        <Modal
-          open
-          onClose={() => setCompletePrompt(null)}
-          title="Complete Tracking Status"
-          subtitle={`Split ${completePrompt.leg.splitNo}`}
-          size="md"
-          footer={
-            <>
-              <Button variant="secondary" onClick={() => setCompletePrompt(null)}>Cancel</Button>
-              <Button onClick={submitCompletePrompt}>Save</Button>
-            </>
-          }
-        >
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <DateTimeField
-              label="Complete In Time"
-              required
-              hint="When the driver checked in for completion"
-              value={completePrompt.completeDt}
-              onChange={(v) => setCompletePrompt((p) => ({ ...p, completeDt: v }))}
-            />
-            <DateTimeField
-              label="Complete Out Time"
-              required
-              hint="When the driver checked out"
-              value={completePrompt.completeOutDt}
-              onChange={(v) => setCompletePrompt((p) => ({ ...p, completeOutDt: v }))}
-            />
-          </div>
-        </Modal>
-      )}
     </>
   )
 }

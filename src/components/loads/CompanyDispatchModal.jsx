@@ -24,13 +24,12 @@ const TRACKING_STATUS = { IN_TRANSIT: '5', COMPLETED: '13' }
 function blankForm() {
   return {
     carrierId: '', vehicleId: '', driverId1: '', driverId2: '', trailerId: '', dispatcherId: '',
-    // Left blank on purpose — matches the reference Loadx-Youngs-Frontend's
-    // plain "Save"/"Save Load" path (as opposed to its separate "Dispatch
-    // Load" button): saving a brand-new assignment with no tracking status
-    // set leaves the load Scheduled(6), not In Transit. Actually dispatching
-    // it — flipping tracking to In Transit(5) — is a separate, later action
-    // on the split card itself (see LoadEditDrawer's per-leg "Tracking
-    // Status"/"Dispatch" control), same two-step shape as the reference.
+    // Left blank on purpose for a brand-new assignment — saving with no
+    // tracking status set leaves the load Scheduled(6), not In Transit.
+    // Once the leg exists, its Tracking Status becomes editable right here
+    // (see the "Tracking Status" field below) rather than from the split
+    // card, so advancing it — e.g. to In Transit(5) or Completed(13) — is a
+    // later Edit-and-Save on this same modal.
     dispatchStartDt: '', dispatchEndDt: '', trackingStatusId: '',
     completeDt: '', completeOutDt: '', dispatchRemark: '',
   }
@@ -42,7 +41,7 @@ function blankForm() {
 // stops currently carry that split_no, so this modal never needs to know
 // about individual stop ids.
 export function CompanyDispatchModal({ open, onClose, loadId, leg, splitNo, onSaved }) {
-  const { carriers, vehicles, drivers, trailers, users } = useData()
+  const { carriers, vehicles, drivers, trailers, users, typeOptions } = useData()
   const [form, setForm] = useState(blankForm())
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
@@ -179,9 +178,6 @@ export function CompanyDispatchModal({ open, onClose, loadId, leg, splitNo, onSa
       footer={
         <>
           <Button variant="secondary" onClick={onClose} disabled={saving}>Cancel</Button>
-          {/* Only "Save Load" is offered — advancing a leg's tracking status
-              (including straight to In Transit) is the split card's inline
-              Tracking Status dropdown's job, not this modal's. */}
           <Button onClick={handleSubmit} disabled={saving}>{saving ? 'Saving…' : 'Save Load'}</Button>
         </>
       }
@@ -241,12 +237,19 @@ export function CompanyDispatchModal({ open, onClose, loadId, leg, splitNo, onSa
         </Section>
 
         <Section title="Schedule">
-          {/* Tracking Status itself isn't set here — it starts unset (auto)
-              on a new assignment and is only advanced afterward from the
-              split card's own Tracking Status dropdown (see
-              LoadEditDrawer's handleTrackingStatusChange), so this modal
-              can't leave it in a state that dropdown doesn't expect. */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {/* Only shown once the leg exists — a brand-new assignment stays
+                Scheduled until it's saved and reopened for edit. */}
+            {leg && (
+              <Field label="Tracking Status" hint="Advance this leg — e.g. In Transit or Completed">
+                <Select value={form.trackingStatusId} onChange={(e) => set({ trackingStatusId: e.target.value })}>
+                  <option value="">Scheduled (not dispatched yet)</option>
+                  {(typeOptions[46] || []).map((o) => (
+                    <option key={o.id} value={o.id}>{o.label}</option>
+                  ))}
+                </Select>
+              </Field>
+            )}
             <DateTimeField label="Dispatch Start Date/Time" value={form.dispatchStartDt} onChange={(v) => set({ dispatchStartDt: v })} />
             <DateTimeField label="Dispatch End Date/Time" value={form.dispatchEndDt} onChange={(v) => set({ dispatchEndDt: v })} />
             {form.trackingStatusId === TRACKING_STATUS.COMPLETED && (
