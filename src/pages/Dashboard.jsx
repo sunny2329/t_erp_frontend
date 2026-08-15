@@ -72,29 +72,38 @@ export default function Dashboard() {
   }
 
   // Mirrors the reference Loadx-Youngs-Frontend Dashboard's "Load filters"
-  // panel — date range (against created/pickup/delivery date)/pickup-PO-BOL
-  // numbers/driver-vehicle-trailer-carrier — but evaluated client-side
-  // against the already fully-loaded `loads` array (see LoadsFilterPanel.jsx
-  // for why: this app's DataContext fetches every load up front, unlike the
-  // reference's paginated server-side fetch, so there's nothing to refetch).
-  const dateForFilterType = (load, type) => {
-    if (type === 'pickup') return getPickupStop(load)?.stopDate || ''
-    if (type === 'delivery') return getDeliveryStop(load)?.stopDate || ''
-    return (load.createdAt || '').slice(0, 10)
-  }
-
+  // panel — independent created/pickup/delivery date ranges, pickup-PO-BOL
+  // numbers, pickup/delivery state, and driver-vehicle-trailer-carrier —
+  // evaluated client-side against the already fully-loaded `loads` array
+  // (see LoadsFilterPanel.jsx for why: this app's DataContext fetches every
+  // load up front, unlike the reference's paginated server-side fetch, so
+  // there's nothing to refetch).
   const panelFiltered = useMemo(() => {
     const f = appliedFilters
     return loads.filter((l) => {
-      if (f.fromDate || f.toDate) {
-        const d = dateForFilterType(l, f.dateType)
+      if (f.createdFromDate || f.createdToDate) {
+        const d = (l.createdAt || '').slice(0, 10)
         if (!d) return false
-        if (f.fromDate && d < f.fromDate) return false
-        if (f.toDate && d > f.toDate) return false
+        if (f.createdFromDate && d < f.createdFromDate) return false
+        if (f.createdToDate && d > f.createdToDate) return false
+      }
+      if (f.pickupFromDate || f.pickupToDate) {
+        const d = getPickupStop(l)?.stopDate || ''
+        if (!d) return false
+        if (f.pickupFromDate && d < f.pickupFromDate) return false
+        if (f.pickupToDate && d > f.pickupToDate) return false
+      }
+      if (f.deliveryFromDate || f.deliveryToDate) {
+        const d = getDeliveryStop(l)?.stopDate || ''
+        if (!d) return false
+        if (f.deliveryFromDate && d < f.deliveryFromDate) return false
+        if (f.deliveryToDate && d > f.deliveryToDate) return false
       }
       if (f.pickupNo && !l.stops.some((s) => s.pickupNumber?.toLowerCase().includes(f.pickupNo.toLowerCase()))) return false
       if (f.poNo && !l.stops.some((s) => s.poNumber?.toLowerCase().includes(f.poNo.toLowerCase()))) return false
       if (f.bolNo && !l.stops.some((s) => s.bolNumber?.toLowerCase().includes(f.bolNo.toLowerCase()))) return false
+      if (f.pickupState && getShipperLocation(l, locations)?.state !== f.pickupState) return false
+      if (f.deliveryState && getConsigneeLocation(l, locations)?.state !== f.deliveryState) return false
       if (f.driverId && !l.assignments.some((a) => a.driverId1 === f.driverId)) return false
       if (f.vehicleId && !l.assignments.some((a) => a.vehicleId === f.vehicleId)) return false
       if (f.trailerId && !l.assignments.some((a) => a.trailerId === f.trailerId)) return false
@@ -102,7 +111,7 @@ export default function Dashboard() {
       return true
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loads, appliedFilters])
+  }, [loads, appliedFilters, locations])
 
   const filtered = useMemo(() => {
     return panelFiltered.filter((l) => {
@@ -338,6 +347,7 @@ export default function Dashboard() {
         vehicles={vehicles}
         trailers={trailers}
         carriers={carriers}
+        locations={locations}
       />
       <ColumnManager
         open={columnManagerOpen}
