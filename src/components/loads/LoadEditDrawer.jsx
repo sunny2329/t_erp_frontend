@@ -224,7 +224,15 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
     const insertAt = groupIndices.length ? groupIndices[groupIndices.length - 1].i + 1 : sortedStops.length
     const newStop = blankStop(stopType, 0, splitNo)
     const next = [...sortedStops.slice(0, insertAt), newStop, ...sortedStops.slice(insertAt)]
-    set({ stops: next.map((s, i) => ({ ...s, sequence: i + 1 })) })
+    const nextForm = { ...form, stops: next.map((s, i) => ({ ...s, sequence: i + 1 })) }
+    setForm(nextForm)
+    // Same auto-save-on-add as insertSplitAt below. Note the new stop starts
+    // blank (no location/date yet), so this first persistForm call will
+    // usually fail validation and just leave the row added locally — it
+    // saves for real once the dispatcher fills in its required fields and
+    // either edits another field (which routes through updateStop, not this
+    // function) or hits "Save Load".
+    persistForm(nextForm, 'Stop added')
   }
   // Inserts TWO real load_stops rows at `afterGlobalIndex` (a position in
   // sortedStops) — the relay/handoff point, same location, entered once in
@@ -630,16 +638,6 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                 collapsible
                 color="indigo"
                 description={`${groupEntries.length} stop(s)${leg ? ` · dispatched (${leg.isExternal ? 'Broker' : 'Company'})` : ' · not yet dispatched'}`}
-                actions={
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="secondary" onClick={() => addStopToSplit(splitNo, 'Pickup')}>
-                      <Plus className="h-3.5 w-3.5" /> Add Pickup
-                    </Button>
-                    <Button size="sm" variant="secondary" onClick={() => addStopToSplit(splitNo, 'Delivery')}>
-                      <Plus className="h-3.5 w-3.5" /> Add Delivery
-                    </Button>
-                  </div>
-                }
               >
                 <div className="pb-2">
                   {leg ? (
@@ -779,13 +777,15 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                   )}
                 </div>
 
-                <div className="space-y-2 border-t border-slate-200 pt-2 dark:border-slate-800">
-                  {groupEntries.map(({ stop, globalIndex }, localIndex) => (
+                {(() => {
+                  const pickupEntries = groupEntries.filter((e) => e.stop.stopType === 'Pickup')
+                  const deliveryEntries = groupEntries.filter((e) => e.stop.stopType === 'Delivery')
+                  const renderStop = ({ stop, globalIndex }, localIndex, total) => (
                     <StopCard
                       key={stop.id}
                       stop={stop}
                       index={localIndex}
-                      total={groupEntries.length}
+                      total={total}
                       onChange={(updated) => updateStop(stop.id, updated)}
                       onRemove={() => removeStop(stop.id)}
                       onMoveUp={() => moveStop(globalIndex, -1)}
@@ -797,9 +797,31 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                       errors={errors.stopErrors?.[stop.id] || {}}
                       onSplit={() => openSplitModal(globalIndex)}
                     />
-                  ))}
-                  {errors.stops && splitNo === 1 && <p className="text-xs text-red-500">{errors.stops}</p>}
-                </div>
+                  )
+                  return (
+                    <div className="space-y-3 border-t border-slate-200 pt-2 dark:border-slate-800">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Pickup</h4>
+                          <Button size="sm" variant="secondary" onClick={() => addStopToSplit(splitNo, 'Pickup')}>
+                            <Plus className="h-3.5 w-3.5" /> Add Pickup
+                          </Button>
+                        </div>
+                        {pickupEntries.map((e, localIndex) => renderStop(e, localIndex, pickupEntries.length))}
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Delivery</h4>
+                          <Button size="sm" variant="secondary" onClick={() => addStopToSplit(splitNo, 'Delivery')}>
+                            <Plus className="h-3.5 w-3.5" /> Add Delivery
+                          </Button>
+                        </div>
+                        {deliveryEntries.map((e, localIndex) => renderStop(e, localIndex, deliveryEntries.length))}
+                      </div>
+                      {errors.stops && splitNo === 1 && <p className="text-xs text-red-500">{errors.stops}</p>}
+                    </div>
+                  )
+                })()}
               </Section>
             )
           })}

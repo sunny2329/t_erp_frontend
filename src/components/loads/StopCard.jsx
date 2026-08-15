@@ -59,11 +59,12 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
   // reference Loadx-Youngs-Frontend's validateStopTimings exactly. The temp
   // field shows once the load's equipment is a reefer type OR this stop has
   // its own Reefer Mode picked — a dispatcher can set a stop to a reefer
-  // mode even on a non-reefer van — and is required unless that mode is
-  // explicitly Off (id 4).
+  // mode even on a non-reefer van — but is only *required* once a mode is
+  // actually picked (and isn't explicitly Off, id 4); a reefer-flagged van
+  // with no mode chosen yet shouldn't force a temperature.
   const timeRequired = stop.appointmentRequired && stop.scheduled
   const reeferModeActive = isReefer || !!stop.reeferModeId
-  const tempRequired = reeferModeActive && stop.reeferModeId !== '4'
+  const tempRequired = !!stop.reeferModeId && stop.reeferModeId !== '4'
 
   const headerActions = (
     <div className="flex items-center gap-1">

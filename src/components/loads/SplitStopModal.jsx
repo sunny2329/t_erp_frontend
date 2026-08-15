@@ -44,11 +44,16 @@ export function SplitStopModal({ open, onClose, locationOptions, onAddLocation, 
   }, [open])
 
   const set = (patch) => setForm((f) => ({ ...f, ...patch }))
+  // Matches StopCard: temp only required once a mode is actually picked and
+  // isn't explicitly Off (id 4) — see loadValidation.js/StopCard.jsx.
+  const reeferModeActive = !!form.reeferModeId
+  const tempRequired = reeferModeActive && form.reeferModeId !== '4'
 
   const handleSave = () => {
     const next = {}
     if (!form.locationId) next.locationId = 'Required'
     if (!form.stopDate) next.stopDate = 'Required'
+    if (tempRequired && (form.tempValue === '' || form.tempValue == null)) next.tempValue = 'Required'
     if (Object.keys(next).length) {
       setErrors(next)
       toast.error('Please fill the required fields')
@@ -114,6 +119,11 @@ export function SplitStopModal({ open, onClose, locationOptions, onAddLocation, 
         <Field label="Reefer Mode">
           <TypeSelect options={typeOptions[21] || []} value={form.reeferModeId} onChange={(v) => set({ reeferModeId: v })} />
         </Field>
+        {reeferModeActive && (
+          <Field label="Reefer Temp (°F)" required={tempRequired} error={errors.tempValue}>
+            <Input type="number" value={form.tempValue} onChange={(e) => set({ tempValue: e.target.value })} error={errors.tempValue} />
+          </Field>
+        )}
         <Field label="Customer Ref">
           <Input value={form.customerRef} onChange={(e) => set({ customerRef: e.target.value })} />
         </Field>

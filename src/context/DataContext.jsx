@@ -42,9 +42,14 @@ import { dropdownApi } from '../services/dropdownApi'
 // filtered below to just the 8 ids that are actually valid trip statuses
 // (matches the reference Loadx-Youngs-Backend's manual status-change FSM
 // allow-list exactly — see LoadEditDrawer.jsx's Load Status field).
+// 7 (equipment/trailer van type) has two near-duplicate reefer rows in the
+// live data — id 1 "VanReefer" and id 2 "Van or Reefer" — confusing to pick
+// between in the dropdown. id 1 is the one with existing load data pointing
+// at it, so id 2 is filtered out here; stopHelpers.js's isReeferVanType
+// still recognizes both ids as reefer, in case any stale record used id 2.
 const TYPE_CATEGORIES = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 17, 18, 19, 20, 21, 23, 24, 25, 28, 30, 34, 46]
 const TRIP_STATUS_IDS = [5, 6, 7, 8, 9, 10, 11, 13]
-const TYPE_CATEGORY_FILTERS = { 1: (row) => row.id <= 3, 34: (row) => TRIP_STATUS_IDS.includes(row.id) }
+const TYPE_CATEGORY_FILTERS = { 1: (row) => row.id <= 3, 7: (row) => row.id !== 2, 34: (row) => TRIP_STATUS_IDS.includes(row.id) }
 
 // A handful of type_master descriptions were seeded with literal HTML
 // entities (e.g. "Empty &amp; Ready with Driver") instead of the character
