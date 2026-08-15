@@ -130,28 +130,33 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
   const agentUsers = users
   const isReefer = isReeferVanType(form.equipment.vanTypeId)
 
-  const validate = () => {
-    const { errors: next, valid } = validateLoadForm(form)
+  // Shared by the manual "Save Load" button and by actions that must persist
+  // immediately on their own (e.g. adding a split) — takes the form to save
+  // explicitly rather than reading `form` from closure, so a caller that just
+  // computed a new stops array can save that exact value without waiting on
+  // setState to land first.
+  const persistForm = async (nextForm, successMessage) => {
+    const { errors: next, valid } = validateLoadForm(nextForm)
     setErrors(next)
-    return valid
-  }
-
-  const handleSave = async () => {
-    if (!validate()) {
+    if (!valid) {
       toast.error('Please fix the highlighted fields')
-      return
+      return false
     }
     setSaving(true)
     try {
-      const updated = await loadsCrud.update(loadId, form)
+      const updated = await loadsCrud.update(loadId, nextForm)
       setForm(updated)
-      toast.success('Load saved')
+      toast.success(successMessage)
+      return true
     } catch (err) {
       toast.error(err.message || 'Failed to save load')
+      return false
     } finally {
       setSaving(false)
     }
   }
+
+  const handleSave = () => persistForm(form, 'Load saved')
 
   const refetchLoad = async () => {
     try {
@@ -249,7 +254,12 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
       pickupStop,
       ...reassigned.slice(afterGlobalIndex + 1)
     ]
-    set({ stops: next.map((s, i) => ({ ...s, sequence: i + 1 })) })
+    const nextForm = { ...form, stops: next.map((s, i) => ({ ...s, sequence: i + 1 })) }
+    // Persist right away — a split is a real action a dispatcher expects to
+    // stick immediately, not something that should be lost if they close the
+    // drawer without remembering to hit "Save Load" afterward.
+    setForm(nextForm)
+    persistForm(nextForm, 'Split added')
   }
   // Split button on a stop card (see StopCard) opens SplitStopModal to
   // collect the relay point's shared details first — a Pickup's button
