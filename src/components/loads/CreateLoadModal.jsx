@@ -296,31 +296,32 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
           </div>
 
           <div className="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-800">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Stops</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{errors.stops ? errors.stops : `${form.stops.length} stop(s)`}</p>
-              </div>
-              <div className="flex gap-2">
-                <Button size="sm" variant="secondary" onClick={() => addStop('Pickup')}>
-                  <Plus className="h-3.5 w-3.5" /> Add Pickup
-                </Button>
-                <Button size="sm" variant="secondary" onClick={() => addStop('Delivery')}>
-                  <Plus className="h-3.5 w-3.5" /> Add Delivery
-                </Button>
-              </div>
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Stops</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{errors.stops ? errors.stops : `${form.stops.length} stop(s)`}</p>
             </div>
-            <div className="space-y-3">
-              {form.stops.map((stop, i) => (
+            {(() => {
+              // Split the flat stops array into two grouped lists purely for
+              // display — Pickup section only offers "Add Pickup", Delivery
+              // section only offers "Add Delivery". onMoveUp/onMoveDown still
+              // act on the stop's real position in form.stops (globalIndex),
+              // not its position within its own section, so reordering stays
+              // consistent with the underlying sequence. addStop's placement
+              // logic (new Pickup before the first Delivery, new Delivery at
+              // the end — see addStop above) is untouched by this grouping.
+              const entries = form.stops.map((s, i) => ({ stop: s, globalIndex: i }))
+              const pickupEntries = entries.filter((e) => e.stop.stopType === 'Pickup')
+              const deliveryEntries = entries.filter((e) => e.stop.stopType === 'Delivery')
+              const renderStop = ({ stop, globalIndex }, localIndex, total) => (
                 <StopCard
                   key={stop.id}
                   stop={stop}
-                  index={i}
-                  total={form.stops.length}
+                  index={localIndex}
+                  total={total}
                   onChange={(updated) => updateStop(stop.id, updated)}
                   onRemove={() => removeStop(stop.id)}
-                  onMoveUp={() => moveStop(i, -1)}
-                  onMoveDown={() => moveStop(i, 1)}
+                  onMoveUp={() => moveStop(globalIndex, -1)}
+                  onMoveDown={() => moveStop(globalIndex, 1)}
                   locationOptions={locationOptions}
                   onAddLocation={openAddLocation}
                   headerCommodity={form.equipment.commodity}
@@ -328,8 +329,30 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
                   errors={errors.stopErrors?.[stop.id] || {}}
                   showLocationCityState
                 />
-              ))}
-            </div>
+              )
+              return (
+                <>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Pickup</h4>
+                      <Button size="sm" variant="secondary" onClick={() => addStop('Pickup')}>
+                        <Plus className="h-3.5 w-3.5" /> Add Pickup
+                      </Button>
+                    </div>
+                    {pickupEntries.map((e, localIndex) => renderStop(e, localIndex, pickupEntries.length))}
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Delivery</h4>
+                      <Button size="sm" variant="secondary" onClick={() => addStop('Delivery')}>
+                        <Plus className="h-3.5 w-3.5" /> Add Delivery
+                      </Button>
+                    </div>
+                    {deliveryEntries.map((e, localIndex) => renderStop(e, localIndex, deliveryEntries.length))}
+                  </div>
+                </>
+              )
+            })()}
           </div>
 
           <div className="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-800">
