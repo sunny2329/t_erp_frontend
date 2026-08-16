@@ -215,10 +215,18 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
     set({ stops: next.map((s, i) => ({ ...s, sequence: i + 1 })) })
   }
   // Inserts within the group's own range (before the next group's first
-  // stop) so seq_no stays consistent with split_no ordering.
+  // stop) so seq_no stays consistent with split_no ordering. A new Pickup
+  // goes right before this group's first Delivery (after every existing
+  // Pickup in the group, not at the group's very end) so the group stays
+  // ordered Pickup(s) then Delivery(s) — insertSplitAt's math (splitting
+  // "just below" a clicked Pickup or "just above" a clicked Delivery)
+  // depends on that ordering holding. A new Delivery still belongs at the
+  // group's end.
   const addStopToSplit = (splitNo, stopType) => {
     const groupIndices = sortedStops.map((s, i) => ({ s, i })).filter((e) => (e.s.splitNo || 1) === splitNo)
-    const insertAt = groupIndices.length ? groupIndices[groupIndices.length - 1].i + 1 : sortedStops.length
+    const groupEnd = groupIndices.length ? groupIndices[groupIndices.length - 1].i + 1 : sortedStops.length
+    const firstDelivery = groupIndices.find((e) => e.s.stopType === 'Delivery')
+    const insertAt = stopType === 'Pickup' && firstDelivery ? firstDelivery.i : groupEnd
     const newStop = blankStop(stopType, 0, splitNo)
     const next = [...sortedStops.slice(0, insertAt), newStop, ...sortedStops.slice(insertAt)]
     const nextForm = { ...form, stops: next.map((s, i) => ({ ...s, sequence: i + 1 })) }

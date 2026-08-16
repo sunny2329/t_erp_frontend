@@ -113,9 +113,12 @@ export function SplitStopModal({ open, onClose, locationOptions, onAddLocation, 
         <Field label="Weight (lbs)">
           <Input type="number" value={form.weight} onChange={(e) => set({ weight: e.target.value })} />
         </Field>
-        <Field label="Stop Action">
-          <TypeSelect options={typeOptions[19] || []} value={form.stopActionId} onChange={(v) => set({ stopActionId: v })} />
-        </Field>
+        {/* No "Stop Action" field here — this one form seeds both the
+            Delivery and the Pickup it creates (see insertSplitAt), but
+            Delivery/Pickup stop actions aren't the same set (Live
+            Unload/Drop Trailer vs Live Load/Hook Trailer — see StopCard), so
+            there's no single value that's correct for both. Set it on each
+            resulting stop card afterward instead. */}
         <Field label="Reefer Mode">
           <TypeSelect options={typeOptions[21] || []} value={form.reeferModeId} onChange={(v) => set({ reeferModeId: v })} />
         </Field>

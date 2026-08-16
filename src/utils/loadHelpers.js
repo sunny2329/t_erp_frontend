@@ -141,7 +141,9 @@ function typeLabel(typeOptions, typeId, value) {
 
 // "Pickup Type"/"Delivery Type" in the reference map to a live/drop action
 // on the stop — t_erp's closest real column is load_stops.stop_action_id
-// (type_master type_id=19, e.g. "Live Load" / "Hook Trailer").
+// (type_master type_id=19: ids 1/2 = "Live Load"/"Hook Trailer" for a
+// Pickup, ids 3/4 = "Live Unload"/"Drop Trailer" for a Delivery — see
+// StopCard's PICKUP_STOP_ACTION_IDS/DELIVERY_STOP_ACTION_IDS).
 export function getPickupType(load, typeOptions) {
   return typeLabel(typeOptions, 19, getPickupStop(load)?.stopActionId) || '—'
 }

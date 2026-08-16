@@ -7,6 +7,11 @@ import { Toggle } from '../ui/Toggle'
 import { SearchSelect } from '../ui/SearchSelect'
 import { useData } from '../../context/DataContext'
 
+// type_master(type_id=19) ids — "Live Load"/"Hook Trailer" only make sense
+// at a Pickup, "Live Unload"/"Drop Trailer" only at a Delivery.
+const PICKUP_STOP_ACTION_IDS = [1, 2]
+const DELIVERY_STOP_ACTION_IDS = [3, 4]
+
 function TypeSelect({ options, value, onChange, placeholder = 'Select…' }) {
   return (
     <Select value={value} onChange={(e) => onChange(e.target.value)}>
@@ -55,6 +60,9 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
 
   const set = (patch) => onChange({ ...stop, ...patch })
   const selectedLocation = locationOptions.find((o) => o.value === stop.locationId)
+  const stopActionOptions = (typeOptions[19] || []).filter((o) =>
+    (stop.stopType === 'Pickup' ? PICKUP_STOP_ACTION_IDS : DELIVERY_STOP_ACTION_IDS).includes(Number(o.id)),
+  )
   // Start/End Time are only required when both toggles are on — matches the
   // reference Loadx-Youngs-Frontend's validateStopTimings exactly. The temp
   // field shows once the load's equipment is a reefer type OR this stop has
@@ -132,7 +140,7 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
         <>
           <div className="grid grid-cols-2 gap-2 p-3 sm:grid-cols-3 lg:grid-cols-4">
             <Field label="Stop Type" required>
-              <Select value={stop.stopType} onChange={(e) => set({ stopType: e.target.value })}>
+              <Select value={stop.stopType} onChange={(e) => set({ stopType: e.target.value, stopActionId: '' })}>
                 <option value="Pickup">Pickup</option>
                 <option value="Delivery">Delivery</option>
               </Select>
@@ -184,7 +192,7 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
               <Input type="number" value={stop.weight} onChange={(e) => set({ weight: e.target.value })} />
             </Field>
             <Field label="Stop Action">
-              <TypeSelect options={typeOptions[19] || []} value={stop.stopActionId} onChange={(v) => set({ stopActionId: v })} />
+              <TypeSelect options={stopActionOptions} value={stop.stopActionId} onChange={(v) => set({ stopActionId: v })} />
             </Field>
             <Field label="Reefer Mode">
               <TypeSelect options={typeOptions[21] || []} value={stop.reeferModeId} onChange={(v) => set({ reeferModeId: v })} />

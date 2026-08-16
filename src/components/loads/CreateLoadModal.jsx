@@ -115,7 +115,15 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
       return { ...prev, stopErrors: nextStopErrors }
     })
   }
-  const addStop = (type) => set({ stops: [...form.stops, blankStop(type, form.stops.length + 1, 1)] })
+  // A new Pickup goes right before this load's first Delivery (i.e. after
+  // every existing Pickup, not at the very end) so stops stay ordered
+  // Pickup(s) then Delivery(s) — a new Delivery always belongs at the end.
+  const addStop = (type) => {
+    const firstDeliveryIndex = form.stops.findIndex((s) => s.stopType === 'Delivery')
+    const insertAt = type === 'Pickup' && firstDeliveryIndex !== -1 ? firstDeliveryIndex : form.stops.length
+    const next = [...form.stops.slice(0, insertAt), blankStop(type, 0, 1), ...form.stops.slice(insertAt)]
+    set({ stops: next.map((s, i) => ({ ...s, sequence: i + 1 })) })
+  }
   const removeStop = (id) =>
     set({ stops: form.stops.filter((s) => s.id !== id).map((s, i) => ({ ...s, sequence: i + 1 })) })
   const moveStop = (index, dir) => {
