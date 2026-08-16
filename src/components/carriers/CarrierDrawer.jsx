@@ -5,6 +5,7 @@ import { Drawer } from '../ui/Drawer'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
 import { Select } from '../ui/Select'
+import { SearchSelect } from '../ui/SearchSelect'
 import { Textarea } from '../ui/Textarea'
 import { Toggle } from '../ui/Toggle'
 import { Button } from '../ui/Button'
@@ -33,6 +34,18 @@ const TABS = [
   { id: 'settlement', label: 'Settlement' },
   { id: 'factoring', label: 'Factoring' },
   { id: 'billing', label: 'Remit & Billing' },
+]
+
+// Fixed contact-type options, matching the reference Loadx-Youngs-Frontend's
+// hardcoded CONTACT_TYPE_OPTIONS (CarriersIndex.jsx) — not type_master-backed,
+// since type_id=5 there holds an unrelated "Primary Contact/Remit Details/…"
+// category.
+const CONTACT_TYPE_OPTIONS = [
+  { value: '1', label: 'Primary' },
+  { value: '2', label: 'Billing' },
+  { value: '3', label: 'Operations' },
+  { value: '4', label: 'Dispatch' },
+  { value: '5', label: 'Safety' },
 ]
 
 function Grid({ children }) {
@@ -206,7 +219,13 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
             <div className="space-y-4">
               <Grid>
                 <Field label="Contact Type">
-                  <TypeSelect options={typeOptions[5] || []} value={form.contact.typeId} onChange={(v) => setSection('contact', { typeId: v })} placeholder="Select contact type" />
+                  <SearchSelect
+                    options={CONTACT_TYPE_OPTIONS}
+                    value={form.contact.typeId}
+                    onChange={(v) => setSection('contact', { typeId: v })}
+                    placeholder="Select contact type"
+                    clearable={false}
+                  />
                 </Field>
                 <Field label="Contact Person">
                   <Input value={form.contact.contactPerson} onChange={(e) => setSection('contact', { contactPerson: e.target.value })} />

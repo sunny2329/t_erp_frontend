@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChevronDown, Plus, Search, X } from 'lucide-react'
+import { Check, ChevronDown, Plus, Search, X } from 'lucide-react'
 import clsx from 'clsx'
 
 export function SearchSelect({
@@ -89,12 +89,21 @@ export function SearchSelect({
                   setQuery('')
                 }}
                 className={clsx(
-                  'flex w-full flex-col items-start px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800',
-                  o.value === value && 'bg-brand-50 dark:bg-brand-900/20',
+                  'flex w-full items-center justify-between px-3 py-2 text-left text-sm',
+                  o.value === value
+                    ? 'bg-brand-500 text-white'
+                    : 'text-slate-800 hover:bg-slate-50 dark:text-slate-100 dark:hover:bg-slate-800',
                 )}
               >
-                <span className="text-slate-800 dark:text-slate-100">{o.label}</span>
-                {o.sublabel && <span className="text-[11px] text-slate-400">{o.sublabel}</span>}
+                <span className="flex flex-col items-start">
+                  <span>{o.label}</span>
+                  {o.sublabel && (
+                    <span className={clsx('text-[11px]', o.value === value ? 'text-white/80' : 'text-slate-400')}>
+                      {o.sublabel}
+                    </span>
+                  )}
+                </span>
+                {o.value === value && <Check className="h-3.5 w-3.5 shrink-0" />}
               </button>
             ))}
           </div>
