@@ -7,6 +7,10 @@
 
 const idStr = (v) => (v === null || v === undefined ? '' : String(v))
 const idNum = (v) => (v === '' || v === null || v === undefined ? null : Number(v))
+// Postgres numeric(x,2) columns (e.g. loads.length) come back from pg as
+// strings like "53.00" — round-trip those through here so whole-number
+// fields display as "53", not "53.00", instead of showing the raw string.
+const intStr = (v) => (v === null || v === undefined || v === '' ? '' : String(Math.round(Number(v))))
 const digitsOnly = (v) => {
   const d = String(v ?? '').replace(/\D/g, '')
   return d ? Number(d) : null
@@ -1329,7 +1333,7 @@ export const loadDetailAdapter = {
     },
     equipment: {
       vanTypeId: idStr(row.van_type_id),
-      length: row.length ?? '',
+      length: intStr(row.length),
       weight: row.weight ?? '',
       commodity: row.commodity || '',
       hazmat: !!row.is_hazmat,
@@ -1362,7 +1366,7 @@ export const loadDetailAdapter = {
     target_rate: form.rate.targetRate === '' ? null : Number(form.rate.targetRate),
     declared_value: form.rate.declaredValue === '' ? null : Number(form.rate.declaredValue),
     van_type_id: idNum(form.equipment.vanTypeId),
-    length: form.equipment.length === '' ? null : Number(form.equipment.length),
+    length: form.equipment.length === '' ? null : Math.round(Number(form.equipment.length)),
     weight: form.equipment.weight === '' ? null : Number(form.equipment.weight),
     commodity: form.equipment.commodity || null,
     is_hazmat: !!form.equipment.hazmat,

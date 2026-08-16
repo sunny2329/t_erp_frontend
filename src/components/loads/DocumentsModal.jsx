@@ -153,9 +153,9 @@ export function DocumentsModal({ open, onClose, loadId, loadNumber }) {
               <div className="flex min-w-0 items-center gap-3">
                 <FileText className="h-5 w-5 shrink-0 text-slate-400" />
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{doc.doc_name || 'Untitled document'}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {doc.doc_type_label || '—'} · {formatDate(doc.addtime)}
+                  <p className="truncate text-base font-semibold text-slate-800 dark:text-slate-100">{doc.doc_type_label || 'Untitled type'}</p>
+                  <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                    {doc.doc_name || 'Untitled document'} · {formatDate(doc.addtime)}
                     {doc.exp_date ? ` · Expires ${doc.exp_date}` : ''}
                   </p>
                 </div>

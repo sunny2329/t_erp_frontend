@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Plus, Truck, Building2, FileText, MessageSquare, FileCheck2, FileSignature, ScrollText, Send, History } from 'lucide-react'
+import { Plus, Truck, Building2, FileText, FileCheck2, FileSignature, ScrollText, Send, History } from 'lucide-react'
 import { Drawer } from '../ui/Drawer'
 import { Modal } from '../ui/Modal'
 import { Field } from '../ui/Field'
@@ -20,7 +20,7 @@ import { SplitStopModal } from './SplitStopModal'
 import { CompanyDispatchModal } from './CompanyDispatchModal'
 import { BrokerDispatchModal } from './BrokerDispatchModal'
 import { DocumentsModal } from './DocumentsModal'
-import { NotesModal } from './NotesModal'
+import { NotesPanel } from './NotesPanel'
 import { LoadHistoryModal } from './LoadHistoryModal'
 import { SendRateConModal } from './SendRateConModal'
 import { loadsApi } from '../../services/masterApi'
@@ -84,7 +84,6 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
   const [dispatchModal, setDispatchModal] = useState(null)
   const [splitModal, setSplitModal] = useState(null)
   const [documentsOpen, setDocumentsOpen] = useState(false)
-  const [notesOpen, setNotesOpen] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
   const [pdfBusy, setPdfBusy] = useState(null)
   const [rateConTarget, setRateConTarget] = useState(null)
@@ -503,9 +502,6 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                 <Button size="sm" variant="secondary" onClick={() => setDocumentsOpen(true)}>
                   <FileText className="h-3.5 w-3.5" /> Documents
                 </Button>
-                <Button size="sm" variant="secondary" onClick={() => setNotesOpen(true)}>
-                  <MessageSquare className="h-3.5 w-3.5" /> Notes
-                </Button>
                 <Button
                   size="sm"
                   variant="secondary"
@@ -576,7 +572,7 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                     <Input value={form.equipment.commodity} onChange={(e) => setEquipment({ commodity: e.target.value })} />
                   </Field>
                   <Field label="Length (ft)">
-                    <Input type="number" value={form.equipment.length} onChange={(e) => setEquipment({ length: e.target.value })} />
+                    <Input type="number" step="1" value={form.equipment.length} onChange={(e) => setEquipment({ length: e.target.value })} />
                   </Field>
                   <Field label="Weight (lbs)">
                     <Input type="number" value={form.equipment.weight} onChange={(e) => setEquipment({ weight: e.target.value })} />
@@ -630,7 +626,7 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                 </div>
               </Section>
 
-              <Section title="Notes" collapsible>
+              <Section title="Load Notes" collapsible>
                 <div className="space-y-2">
                   <Field label="Customer Load Notes">
                     <Textarea rows={2} value={form.notes.customerLoadNotes} onChange={(e) => setNotes({ customerLoadNotes: e.target.value })} />
@@ -639,6 +635,14 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                     <Textarea rows={2} value={form.notes.dispatchNotes} onChange={(e) => setNotes({ dispatchNotes: e.target.value })} />
                   </Field>
                 </div>
+              </Section>
+
+              {/* Timeline notes/comments log — used to be a click-to-open
+                  modal (see NotesModal/NotesPanel), now rendered inline as
+                  its own section so it's visible without leaving this
+                  drawer. */}
+              <Section title="Notes & Comments" collapsible>
+                <NotesPanel loadId={loadId} />
               </Section>
             </div>
 
@@ -890,12 +894,6 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
       <DocumentsModal
         open={documentsOpen}
         onClose={() => setDocumentsOpen(false)}
-        loadId={loadId}
-        loadNumber={form.loadNumber}
-      />
-      <NotesModal
-        open={notesOpen}
-        onClose={() => setNotesOpen(false)}
         loadId={loadId}
         loadNumber={form.loadNumber}
       />

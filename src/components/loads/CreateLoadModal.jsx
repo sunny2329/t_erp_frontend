@@ -240,7 +240,7 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
                 <TypeSelect options={typeOptions[7] || []} value={form.equipment.vanTypeId} onChange={(v) => setEquipment({ vanTypeId: v })} placeholder="Select equipment" />
               </Field>
               <Field label="Length (ft)">
-                <Input type="number" value={form.equipment.length} onChange={(e) => setEquipment({ length: e.target.value })} />
+                <Input type="number" step="1" value={form.equipment.length} onChange={(e) => setEquipment({ length: e.target.value })} />
               </Field>
               <Field label="Weight (lbs)">
                 <Input type="number" value={form.equipment.weight} onChange={(e) => setEquipment({ weight: e.target.value })} />
