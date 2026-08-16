@@ -4,6 +4,8 @@ import toast from 'react-hot-toast'
 import { useData } from '../context/DataContext'
 import { PageHeader } from '../components/ui/PageHeader'
 import { Button } from '../components/ui/Button'
+import { Input } from '../components/ui/Input'
+import { Select } from '../components/ui/Select'
 import { StatCard } from '../components/ui/StatCard'
 import { Badge } from '../components/ui/Badge'
 import { DataTable } from '../components/ui/DataTable'
@@ -57,6 +59,9 @@ export default function Dashboard() {
   const { loads, customers, carriers, drivers, vehicles, trailers, users, locations, typeOptions, mastersLoading, mastersError } = useData()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
+  const [pickupDateFilter, setPickupDateFilter] = useState('')
+  const [deliveryDateFilter, setDeliveryDateFilter] = useState('')
+  const [customerFilter, setCustomerFilter] = useState('All')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedLoadId, setSelectedLoadId] = useState(null)
   const [filterPanelOpen, setFilterPanelOpen] = useState(false)
@@ -124,9 +129,12 @@ export default function Dashboard() {
         (customer?.name || '').toLowerCase().includes(q) ||
         (rateConNumber !== '—' && rateConNumber.toLowerCase().includes(q))
       const matchesStatus = statusFilter === 'All' || l.tripStatus === statusFilter
-      return matchesSearch && matchesStatus
+      const matchesCustomer = customerFilter === 'All' || customer?.id === customerFilter
+      const matchesPickupDate = !pickupDateFilter || getPickupStop(l)?.stopDate === pickupDateFilter
+      const matchesDeliveryDate = !deliveryDateFilter || getDeliveryStop(l)?.stopDate === deliveryDateFilter
+      return matchesSearch && matchesStatus && matchesCustomer && matchesPickupDate && matchesDeliveryDate
     })
-  }, [panelFiltered, customers, search, statusFilter])
+  }, [panelFiltered, customers, search, statusFilter, customerFilter, pickupDateFilter, deliveryDateFilter])
 
   const openCreate = () => {
     setSelectedLoadId(null)
@@ -289,7 +297,36 @@ export default function Dashboard() {
         <StatCard label="Cancelled" value={counts.Cancelled} icon={XCircle} accent="red" onClick={() => toggleStatusFilter('Cancelled')} active={statusFilter === 'Cancelled'} />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-4 flex flex-wrap items-end gap-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900/50">
+        <label className="block">
+          <span className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Pickup Date</span>
+          <Input type="date" value={pickupDateFilter} onChange={(e) => setPickupDateFilter(e.target.value)} className="w-40" />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Delivery Date</span>
+          <Input type="date" value={deliveryDateFilter} onChange={(e) => setDeliveryDateFilter(e.target.value)} className="w-40" />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">Customer</span>
+          <Select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} className="w-56">
+            <option value="All">All customers</option>
+            {customers.filter((c) => c.active).map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </Select>
+        </label>
+        {(pickupDateFilter || deliveryDateFilter || customerFilter !== 'All') && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => { setPickupDateFilter(''); setDeliveryDateFilter(''); setCustomerFilter('All') }}
+          >
+            Clear filters
+          </Button>
+        )}
+      </div>
+
+      <div className="mt-4">
         <DataTable
           columns={tableColumns}
           rows={filtered}
