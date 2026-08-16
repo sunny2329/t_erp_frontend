@@ -296,16 +296,6 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
           </div>
 
           <div className="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-800">
-            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Notes</h3>
-            <Field label="Customer Load Notes">
-              <Textarea rows={2} value={form.notes.customerLoadNotes} onChange={(e) => setNotes({ customerLoadNotes: e.target.value })} />
-            </Field>
-            <Field label="Dispatch Notes">
-              <Textarea rows={2} value={form.notes.dispatchNotes} onChange={(e) => setNotes({ dispatchNotes: e.target.value })} />
-            </Field>
-          </div>
-
-          <div className="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-800">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Stops</h3>
@@ -340,6 +330,16 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
                 />
               ))}
             </div>
+          </div>
+
+          <div className="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-800">
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Notes</h3>
+            <Field label="Customer Load Notes">
+              <Textarea rows={2} value={form.notes.customerLoadNotes} onChange={(e) => setNotes({ customerLoadNotes: e.target.value })} />
+            </Field>
+            <Field label="Dispatch Notes">
+              <Textarea rows={2} value={form.notes.dispatchNotes} onChange={(e) => setNotes({ dispatchNotes: e.target.value })} />
+            </Field>
           </div>
         </div>
       </Drawer>
