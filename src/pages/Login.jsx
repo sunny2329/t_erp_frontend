@@ -1,15 +1,15 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Truck, Lock, User, Sun, Moon, AlertCircle, MapPin, Radar, PackageCheck, Eye, EyeOff } from 'lucide-react'
+import { Truck, Lock, User, Sun, Moon, AlertCircle, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import { Input } from '../components/ui/Input'
 import { Button } from '../components/ui/Button'
 
-const HIGHLIGHTS = [
-  { icon: Radar, text: 'Real-time tracking across every leg of the trip' },
-  { icon: MapPin, text: 'Split loads and dispatch multiple drivers in seconds' },
-  { icon: PackageCheck, text: 'One dashboard for loads, carriers, and documents' },
+const STATS = [
+  { value: '39', label: 'Load fields tracked end to end' },
+  { value: '24/7', label: 'Dispatch visibility, no gaps' },
+  { value: '1', label: 'Workspace for loads, fleet, and docs' },
 ]
 
 export default function Login() {
@@ -49,15 +49,15 @@ export default function Login() {
       <div className="relative flex w-full flex-col justify-center px-6 py-12 sm:px-12 lg:w-[46%] lg:px-16 xl:w-[40%]">
         <button
           onClick={toggleTheme}
-          className="absolute right-6 top-6 rounded-lg border border-slate-200 bg-white p-2 text-slate-500 shadow-sm hover:text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+          className="absolute right-6 top-6 rounded-md border border-slate-200 bg-white p-2 text-slate-500 hover:text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
         >
           {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
 
         <div className="mx-auto w-full max-w-sm">
           <div className="mb-10 flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white">
-              <Truck className="h-5 w-5" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-brand-600 text-white">
+              <Truck className="h-4 w-4" />
             </div>
             <span className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">DispatchTMS</span>
           </div>
@@ -123,39 +123,29 @@ export default function Login() {
       </div>
 
       {/* Right — brand panel */}
-      <div className="relative hidden overflow-hidden bg-gradient-to-br from-brand-600 via-brand-700 to-slate-900 lg:flex lg:w-[54%] lg:items-center lg:justify-center xl:w-[60%]">
-        <div
-          className="absolute inset-0 opacity-[0.15]"
-          style={{
-            backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)',
-            backgroundSize: '22px 22px',
-            color: '#ffffff',
-          }}
-        />
-        <div className="absolute -right-24 -top-24 h-[26rem] w-[26rem] rounded-full bg-brand-400/30 blur-3xl" />
-        <div className="absolute -bottom-32 -left-16 h-[28rem] w-[28rem] rounded-full bg-slate-900/40 blur-3xl" />
+      <div className="relative hidden bg-slate-950 lg:flex lg:w-[54%] lg:flex-col lg:justify-between xl:w-[60%]">
+        <div className="flex items-center justify-between px-12 pt-10 font-mono text-[11px] uppercase tracking-wider text-slate-500">
+          <span>Freight operations</span>
+          <span>v1.0</span>
+        </div>
 
-        <div className="relative z-10 max-w-lg px-12 text-white">
-          <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20">
-            <Truck className="h-7 w-7" />
-          </div>
-          <h2 className="text-4xl font-semibold leading-tight tracking-tight">
-            Dispatch smarter.<br />Deliver faster.
+        <div className="max-w-lg px-12">
+          <span className="block h-px w-10 bg-brand-500" />
+          <h2 className="mt-6 text-4xl font-semibold leading-[1.15] tracking-tight text-white">
+            Every load, one system of record.
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-brand-100/90">
-            The single workspace your team needs to book loads, dispatch drivers, and keep every shipment moving.
+          <p className="mt-4 text-sm leading-relaxed text-slate-400">
+            Book loads, assign drivers, and track delivery status without switching tools or losing the paper trail.
           </p>
+        </div>
 
-          <div className="mt-10 space-y-4">
-            {HIGHLIGHTS.map(({ icon: Icon, text }) => (
-              <div key={text} className="flex items-center gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/20">
-                  <Icon className="h-4 w-4" />
-                </div>
-                <span className="text-sm text-brand-100/90">{text}</span>
-              </div>
-            ))}
-          </div>
+        <div className="grid grid-cols-3 border-t border-slate-800 px-12 py-8">
+          {STATS.map(({ value, label }, i) => (
+            <div key={label} className={i > 0 ? 'border-l border-slate-800 pl-6' : ''}>
+              <p className="font-mono text-2xl font-semibold text-white">{value}</p>
+              <p className="mt-1 text-xs leading-snug text-slate-500">{label}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>

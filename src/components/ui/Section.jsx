@@ -77,7 +77,7 @@ export function Section({ title, description, actions, children, className = '',
           className="flex flex-1 items-center justify-between rounded text-left transition-opacity hover:opacity-80"
         >
           <div>
-            <h3 className={`text-sm font-bold uppercase tracking-wide ${palette ? palette.title : 'text-slate-700 dark:text-slate-200'}`}>{title}</h3>
+            {title && <h3 className={`text-sm font-bold uppercase tracking-wide ${palette ? palette.title : 'text-slate-700 dark:text-slate-200'}`}>{title}</h3>}
             {description && <p className="mt-0.5 text-xs font-normal normal-case text-slate-500 dark:text-slate-400">{description}</p>}
           </div>
           {open ? <ChevronUp className={`h-4 w-4 shrink-0 ${palette ? palette.icon : 'text-slate-500'}`} /> : <ChevronDown className={`h-4 w-4 shrink-0 ${palette ? palette.icon : 'text-slate-500'}`} />}

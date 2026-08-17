@@ -6,7 +6,7 @@ export function Select({ error, className = '', children, ...props }) {
     <div className="relative">
       <select
         className={clsx(
-          'w-full appearance-none rounded-lg border bg-white px-3 py-2 pr-8 text-sm text-slate-900 outline-none transition focus:ring-2 focus:ring-brand-500/30',
+          'w-full appearance-none rounded-md border bg-white px-3 py-2 pr-8 text-sm text-slate-900 outline-none transition-colors focus:ring-1 focus:ring-brand-500',
           error ? 'border-red-400 focus:border-red-500' : 'border-slate-300 focus:border-brand-500',
           'dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700 dark:focus:border-brand-500',
           props.disabled && 'opacity-60 cursor-not-allowed',

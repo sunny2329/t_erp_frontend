@@ -657,7 +657,7 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
             return (
               <Section
                 key={splitNo}
-                title={`Split ${splitNo}`}
+                title={singleLegLoad ? undefined : `Split ${splitNo}`}
                 collapsible
                 color="indigo"
                 description={`${groupEntries.length} stop(s)${leg ? ` · dispatched (${leg.isExternal ? 'Broker' : 'Company'})` : ' · not yet dispatched'}`}

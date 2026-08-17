@@ -18,9 +18,9 @@ export function Drawer({ open, onClose, title, subtitle, headerExtra, children, 
 
   return createPortal(
     <div className="fixed inset-0 z-40 flex justify-end">
-      <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-slate-900/60 dark:bg-black/70" onClick={onClose} />
       <div
-        className={`relative flex h-full w-full ${width} flex-col bg-white shadow-2xl dark:bg-slate-900 animate-[slideIn_0.2s_ease-out]`}
+        className={`relative flex h-full w-full ${width} flex-col bg-white shadow-xl dark:bg-slate-900 animate-[slideIn_0.2s_ease-out]`}
       >
         <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-4 dark:border-slate-800">
           <div className="min-w-0">
@@ -31,7 +31,7 @@ export function Drawer({ open, onClose, title, subtitle, headerExtra, children, 
             {headerExtra}
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
             >
               <X className="h-4 w-4" />
             </button>

@@ -25,9 +25,9 @@ export function Modal({ open, onClose, title, subtitle, children, footer, size =
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-slate-900/60 dark:bg-black/70" onClick={onClose} />
       <div
-        className={`relative flex max-h-[90vh] w-full ${widths[size]} flex-col rounded-xl bg-white shadow-2xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800`}
+        className={`relative flex max-h-[90vh] w-full ${widths[size]} flex-col rounded-lg bg-white shadow-xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800`}
       >
         <div className="flex items-start justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-800">
           <div>
@@ -36,7 +36,7 @@ export function Modal({ open, onClose, title, subtitle, children, footer, size =
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
           >
             <X className="h-4 w-4" />
           </button>
