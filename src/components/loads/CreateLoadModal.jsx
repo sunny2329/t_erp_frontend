@@ -169,10 +169,11 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
         { key: 'address', label: 'Address' },
         { key: 'city', label: 'City' },
         { key: 'state', label: 'State' },
+        { key: 'zipCode', label: 'Zip Code' },
         { key: 'phone', label: 'Phone' },
       ],
       onCreate: async (data) => {
-        const created = await locationsCrud.add({ name: data.name, address: data.address || data.city || data.name, city: data.city, state: data.state, phone: data.phone, carrierId: '' })
+        const created = await locationsCrud.add({ name: data.name, address: data.address || data.city || data.name, city: data.city, state: data.state, zipCode: data.zipCode, phone: data.phone, carrierId: '' })
         onCreated(created.id)
       },
     })
