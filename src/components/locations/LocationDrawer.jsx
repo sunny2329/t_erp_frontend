@@ -96,6 +96,9 @@ export function LocationDrawer({ open, onClose, locationId, onSaved }) {
               <Field label="State">
                 <Input value={form.state} onChange={(e) => set({ state: e.target.value })} />
               </Field>
+              <Field label="Zip Code">
+                <Input value={form.zipCode} onChange={(e) => set({ zipCode: e.target.value })} />
+              </Field>
               <Field label="Country">
                 <Input value={form.country} onChange={(e) => set({ country: e.target.value })} />
               </Field>

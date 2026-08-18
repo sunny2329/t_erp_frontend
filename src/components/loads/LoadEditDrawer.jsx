@@ -124,7 +124,7 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
   // matched by SearchSelect's search (which filters on label + sublabel
   // together) — matches the reference Loadx-Youngs-Frontend's location
   // dropdown, which displays/searches "{name} - {street address}".
-  const locationOptions = locations.map((l) => ({ value: l.id, label: l.name, sublabel: [l.address, l.city && l.state ? `${l.city}, ${l.state}` : l.city || l.state].filter(Boolean).join(' · ') }))
+  const locationOptions = locations.map((l) => ({ value: l.id, label: l.name, sublabel: [l.address, l.city && l.state ? `${l.city}, ${l.state}` : l.city || l.state].filter(Boolean).join(' · '), city: l.city, state: l.state, zipCode: l.zipCode }))
   const carrierOptions = carriers.filter((c) => c.active)
   const agentUsers = users
   const isReefer = isReeferVanType(form.equipment.vanTypeId)
@@ -821,6 +821,7 @@ export function LoadEditDrawer({ open, onClose, loadId }) {
                       isReefer={isReefer}
                       errors={errors.stopErrors?.[stop.id] || {}}
                       onSplit={() => openSplitModal(globalIndex)}
+                      showLocationCityState
                     />
                   )
                   return (

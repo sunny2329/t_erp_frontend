@@ -911,6 +911,7 @@ export const locationAdapter = {
     address: row.address_line1 || '',
     city: row.city_name || '',
     state: row.state_name || '',
+    zipCode: row.zip_code || '',
     phone: row.phone || '',
     carrierId: idStr(row.carrier_id),
   }),
@@ -919,6 +920,7 @@ export const locationAdapter = {
     address_line1: form.address,
     city_name: form.city || null,
     state_name: form.state || null,
+    zip_code: form.zipCode || null,
     phone: form.phone || null,
     carrier_id: idNum(form.carrierId),
   }),
@@ -929,7 +931,7 @@ export const locationAdapter = {
 // locations.controller.js) — not in this form, same reasoning as customers.
 export function blankLocationDetail() {
   return {
-    id: '', name: '', address: '', address2: '', city: '', state: '', country: 'USA',
+    id: '', name: '', address: '', address2: '', city: '', state: '', country: 'USA', zipCode: '',
     phone: '', phoneExt: '', fax: '', email: '', website: '', contactPerson: '', notes: '',
     isLocalTerminal: false, status: true,
   }
@@ -944,6 +946,7 @@ export const locationDetailAdapter = {
     city: row.city_name || '',
     state: row.state_name || '',
     country: row.country_name || 'USA',
+    zipCode: row.zip_code || '',
     phone: row.phone || '',
     phoneExt: row.phone_ext || '',
     fax: row.fax || '',
@@ -961,6 +964,7 @@ export const locationDetailAdapter = {
     city_name: form.city || null,
     state_name: form.state || null,
     country_name: form.country || null,
+    zip_code: form.zipCode || null,
     phone: form.phone || null,
     phone_ext: form.phoneExt || null,
     fax: form.fax || null,

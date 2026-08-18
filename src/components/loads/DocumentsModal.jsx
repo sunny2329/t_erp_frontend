@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { FileText, Trash2, UploadCloud, Download } from 'lucide-react'
+import { FileText, Trash2, UploadCloud, Download, Eye } from 'lucide-react'
 import { Modal } from '../ui/Modal'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
@@ -8,6 +8,7 @@ import { Select } from '../ui/Select'
 import { Button } from '../ui/Button'
 import { useData } from '../../context/DataContext'
 import { documentsApi } from '../../services/documentsApi'
+import { DocumentViewerModal } from './DocumentViewerModal'
 
 function blankForm() {
   return { docName: '', docTypeId: '', expDate: '' }
@@ -29,6 +30,7 @@ export function DocumentsModal({ open, onClose, loadId, loadNumber }) {
   const [uploading, setUploading] = useState(false)
   const [form, setForm] = useState(blankForm())
   const [file, setFile] = useState(null)
+  const [viewerDoc, setViewerDoc] = useState(null)
   const fileInputRef = useRef(null)
 
   const docTypeOptions = typeOptions[23] || []
@@ -161,6 +163,9 @@ export function DocumentsModal({ open, onClose, loadId, loadNumber }) {
                 </div>
               </div>
               <div className="flex shrink-0 items-center gap-1">
+                <Button size="sm" variant="ghost" onClick={() => setViewerDoc(doc)} title="View">
+                  <Eye className="h-3.5 w-3.5" />
+                </Button>
                 <a href={doc.doc_url} target="_blank" rel="noreferrer" title="Download">
                   <Button size="sm" variant="ghost"><Download className="h-3.5 w-3.5" /></Button>
                 </a>
@@ -172,6 +177,8 @@ export function DocumentsModal({ open, onClose, loadId, loadNumber }) {
           ))}
         </div>
       </div>
+
+      <DocumentViewerModal open={!!viewerDoc} onClose={() => setViewerDoc(null)} doc={viewerDoc} />
     </Modal>
   )
 }

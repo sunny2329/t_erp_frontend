@@ -164,6 +164,9 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
                 <Field label="State">
                   <Input value={selectedLocation?.state || ''} disabled />
                 </Field>
+                <Field label="Zip">
+                  <Input value={selectedLocation?.zipCode || ''} disabled />
+                </Field>
               </>
             )}
 
