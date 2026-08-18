@@ -75,8 +75,8 @@ function NavItem({ to, label, icon: Icon, onNavigate, nested }) {
           'flex items-center gap-3 rounded-md py-2 text-sm font-medium transition-colors',
           nested ? 'pl-9 pr-3' : 'px-3',
           isActive
-            ? 'bg-slate-800 text-white'
-            : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200',
+            ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-white'
+            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-slate-200',
         )
       }
     >
@@ -95,7 +95,7 @@ function NavGroup({ group, onNavigate, defaultOpen }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 transition-colors hover:text-slate-300"
+        className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 transition-colors hover:text-slate-700 dark:hover:text-slate-300"
       >
         <GroupIcon className="h-3.5 w-3.5 shrink-0" />
         <span className="flex-1 text-left">{group.label}</span>
@@ -123,22 +123,22 @@ export function Sidebar({ open, onNavigate }) {
   return (
     <aside
       className={clsx(
-        'fixed inset-y-0 left-0 z-30 flex w-64 flex-col border-r border-slate-800 bg-slate-950 transition-transform lg:static lg:translate-x-0',
+        'fixed inset-y-0 left-0 z-30 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform dark:border-slate-800 dark:bg-slate-950 lg:static lg:translate-x-0',
         open ? 'translate-x-0' : '-translate-x-full',
       )}
     >
-      <div className="flex h-14 items-center gap-2.5 border-b border-slate-800 px-5">
+      <div className="flex h-14 items-center gap-2.5 border-b border-slate-200 px-5 dark:border-slate-800">
         <div className="flex h-7 w-7 items-center justify-center rounded-md bg-brand-600 text-white">
           <TruckLogo className="h-4 w-4" />
         </div>
-        <span className="text-sm font-semibold tracking-tight text-white">DispatchTMS</span>
+        <span className="text-sm font-semibold tracking-tight text-slate-900 dark:text-white">DispatchTMS</span>
       </div>
 
       <nav className="scrollbar-thin flex-1 space-y-3 overflow-y-auto px-3 py-4">
         {showTopItem && <NavItem {...topItem} onNavigate={onNavigate} />}
 
         {visibleGroups.length > 0 && (
-          <div className="space-y-3 border-t border-slate-800/60 pt-3">
+          <div className="space-y-3 border-t border-slate-200/60 pt-3 dark:border-slate-800/60">
             {visibleGroups.map((group) => (
               <NavGroup key={group.id} group={group} onNavigate={onNavigate} defaultOpen />
             ))}
@@ -150,7 +150,7 @@ export function Sidebar({ open, onNavigate }) {
         )}
       </nav>
 
-      <div className="border-t border-slate-800 p-3 font-mono text-[10px] uppercase tracking-wider text-slate-600">
+      <div className="border-t border-slate-200 p-3 font-mono text-[10px] uppercase tracking-wider text-slate-400 dark:border-slate-800 dark:text-slate-600">
         Live data · Postgres-backed
       </div>
     </aside>
