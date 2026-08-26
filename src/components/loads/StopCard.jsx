@@ -62,6 +62,7 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
 
   const set = (patch) => onChange({ ...stop, ...patch })
   const selectedLocation = locationOptions.find((o) => o.value === stop.locationId)
+  const qtyTypeLabel = (typeOptions[20] || []).find((o) => String(o.id) === stop.qtyTypeId)?.label || ''
   const stopActionOptions = (typeOptions[19] || []).filter((o) =>
     (stop.stopType === 'Pickup' ? PICKUP_STOP_ACTION_IDS : DELIVERY_STOP_ACTION_IDS).includes(Number(o.id)),
   )
@@ -133,7 +134,7 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
           <SummaryItem label="Pickup #" value={stop.pickupNumber} />
           <SummaryItem label="BOL #" value={stop.bolNumber} />
           <SummaryItem label="PO #" value={stop.poNumber} />
-          <SummaryItem label="Qty" value={stop.qty} />
+          <SummaryItem label="Qty" value={[stop.qty, qtyTypeLabel].filter(Boolean).join(' ')} />
           <SummaryItem label="Weight (lbs)" value={stop.weight} />
           <SummaryItem label="Commodity" value={stop.commodity} className="col-span-2" />
           {stop.instructions && <SummaryItem label="Instructions" value={stop.instructions} className="col-span-2 sm:col-span-4" />}
