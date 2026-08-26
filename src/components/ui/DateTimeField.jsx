@@ -1,5 +1,6 @@
 import { Field } from './Field'
 import { Input } from './Input'
+import { TimeInput } from './TimeInput'
 
 function splitDateTime(value) {
   if (!value) return { date: '', time: '' }
@@ -20,7 +21,7 @@ export function DateTimeField({ label, value, onChange, required, hint, error })
     <Field label={label} required={required} hint={hint} error={error}>
       <div className="flex gap-2">
         <Input type="date" value={date} onChange={(e) => onChange(combine(e.target.value, time))} className="flex-1" />
-        <Input type="time" value={time} onChange={(e) => onChange(combine(date, e.target.value))} className="flex-1" />
+        <TimeInput value={time} onChange={(e) => onChange(combine(date, e.target.value))} className="flex-1" />
       </div>
     </Field>
   )

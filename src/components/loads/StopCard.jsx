@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { ChevronDown, ChevronUp, Trash2, GripVertical, Copy, Scissors, Pencil, Check } from 'lucide-react'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
+import { TimeInput } from '../ui/TimeInput'
 import { Select } from '../ui/Select'
 import { Toggle } from '../ui/Toggle'
 import { SearchSelect } from '../ui/SearchSelect'
@@ -184,10 +185,10 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
               />
             </Field>
             <Field label="Start Time" required={timeRequired} error={errors.startTime} hint={!timeRequired ? 'Required when Appointment + Scheduled are both on' : undefined}>
-              <Input type="time" value={stop.startTime} onChange={(e) => set({ startTime: e.target.value })} error={errors.startTime} />
+              <TimeInput value={stop.startTime} onChange={(e) => set({ startTime: e.target.value })} error={errors.startTime} />
             </Field>
             <Field label="End Time" required={timeRequired} error={errors.endTime}>
-              <Input type="time" value={stop.endTime} onChange={(e) => set({ endTime: e.target.value })} error={errors.endTime} />
+              <TimeInput value={stop.endTime} onChange={(e) => set({ endTime: e.target.value })} error={errors.endTime} />
             </Field>
 
             <div className="flex items-center gap-4 sm:col-span-3 lg:col-span-4">

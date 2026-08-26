@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Modal } from '../ui/Modal'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
+import { TimeInput } from '../ui/TimeInput'
 import { Select } from '../ui/Select'
 import { Toggle } from '../ui/Toggle'
 import { SearchSelect } from '../ui/SearchSelect'
@@ -103,10 +104,10 @@ export function SplitStopModal({ open, onClose, locationOptions, onAddLocation, 
           />
         </Field>
         <Field label="Start Time">
-          <Input type="time" value={form.startTime} onChange={(e) => set({ startTime: e.target.value })} />
+          <TimeInput value={form.startTime} onChange={(e) => set({ startTime: e.target.value })} />
         </Field>
         <Field label="End Time">
-          <Input type="time" value={form.endTime} onChange={(e) => set({ endTime: e.target.value })} />
+          <TimeInput value={form.endTime} onChange={(e) => set({ endTime: e.target.value })} />
         </Field>
 
         <div className="flex items-center gap-6 sm:col-span-3">
