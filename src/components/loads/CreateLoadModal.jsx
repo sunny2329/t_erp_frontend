@@ -148,13 +148,15 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
         { key: 'address', label: 'Address', type: 'address', fullWidth: true },
         { key: 'city', label: 'City' },
         { key: 'state', label: 'State' },
+        { key: 'country', label: 'Country', defaultValue: 'USA' },
         { key: 'phone', label: 'Phone', type: 'phone' },
         { key: 'email', label: 'Email' },
       ],
       onCreate: async (data) => {
         const created = await customersCrud.add({
           name: data.name, salesAgentId: data.salesAgentId, customerTypeId: data.customerTypeId,
-          address: data.address, city: data.city, state: data.state, phone: data.phone, email: data.email,
+          address: data.address, city: data.city, state: data.state, country: data.country || 'USA',
+          lat: data.lat, lon: data.lon, phone: data.phone, email: data.email,
         })
         set({ customerId: created.id })
       },
@@ -169,11 +171,15 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
         { key: 'address', label: 'Address', type: 'address', fullWidth: true },
         { key: 'city', label: 'City' },
         { key: 'state', label: 'State' },
+        { key: 'country', label: 'Country', defaultValue: 'USA' },
         { key: 'zipCode', label: 'Zip Code' },
         { key: 'phone', label: 'Phone', type: 'phone' },
       ],
       onCreate: async (data) => {
-        const created = await locationsCrud.add({ name: data.name, address: data.address || data.city || data.name, city: data.city, state: data.state, zipCode: data.zipCode, phone: data.phone, carrierId: '' })
+        const created = await locationsCrud.add({
+          name: data.name, address: data.address || data.city || data.name, city: data.city, state: data.state,
+          country: data.country || 'USA', lat: data.lat, lon: data.lon, zipCode: data.zipCode, phone: data.phone, carrierId: '',
+        })
         onCreated(created.id)
       },
     })

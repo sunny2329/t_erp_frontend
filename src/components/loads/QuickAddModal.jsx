@@ -28,9 +28,14 @@ export function QuickAddModal({ open, onClose, title, entityLabel, fields, onCre
 
   useEffect(() => {
     if (open) {
-      setData({})
+      const defaults = {}
+      activeFields.forEach((f) => {
+        if (f.defaultValue !== undefined) defaults[f.key] = f.defaultValue
+      })
+      setData(defaults)
       setErrors({})
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
   const set = (key, value) => {
@@ -48,7 +53,9 @@ export function QuickAddModal({ open, onClose, title, entityLabel, fields, onCre
       city: place.city,
       state: place.state,
       zipCode: place.zipCode,
-      country: place.country,
+      country: place.country || 'USA',
+      lat: place.lat,
+      lon: place.lon,
     }))
     setErrors((e) => ({ ...e, [addressKey]: undefined, city: undefined, state: undefined, zipCode: undefined }))
   }

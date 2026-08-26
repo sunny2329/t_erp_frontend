@@ -37,7 +37,9 @@ function toPlace(feature) {
     city: p.city || p.town || p.village || (['city', 'town', 'village'].includes(p.type) ? p.name : '') || '',
     state: p.state || (p.type === 'state' ? p.name : '') || '',
     zipCode: p.postcode || (isPostcode ? p.name : '') || '',
-    country: p.country || (p.type === 'country' ? p.name : '') || '',
+    // Photon returns the US as "United States" — normalize to "USA" to
+    // match this app's convention (see blankCustomerDetail/blankLocationDetail).
+    country: p.countrycode === 'US' ? 'USA' : p.country || (p.type === 'country' ? p.name : '') || '',
     lat,
     lon,
   }
