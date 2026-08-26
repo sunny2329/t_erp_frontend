@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import { CheckCircle2, XCircle, FileText, ShieldAlert } from 'lucide-react'
 import { Field } from '../components/ui/Field'
 import { Input } from '../components/ui/Input'
+import { PhoneInput } from '../components/ui/PhoneInput'
 import { Button } from '../components/ui/Button'
 import { publicErateApi } from '../services/erateApi'
 
@@ -138,7 +139,7 @@ export default function PublicRateConfirm() {
                   <Input value={form.driverName} onChange={(e) => set({ driverName: e.target.value })} />
                 </Field>
                 <Field label="Driver Phone">
-                  <Input value={form.driverPhone} onChange={(e) => set({ driverPhone: e.target.value })} />
+                  <PhoneInput value={form.driverPhone} onChange={(e) => set({ driverPhone: e.target.value })} />
                 </Field>
                 <Field label="Vehicle #">
                   <Input value={form.vehicleNo} onChange={(e) => set({ vehicleNo: e.target.value })} />

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Plus, Package, Truck, CheckCircle2, XCircle, Filter, Link2, Copy, Columns3 } from 'lucide-react'
+import { Plus, Package, Truck, CheckCircle2, XCircle, Filter, Link2, Copy, Columns3, RefreshCw } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useData } from '../context/DataContext'
 import { PageHeader } from '../components/ui/PageHeader'
@@ -56,7 +56,7 @@ import {
 // per-column header filters; Kanban/card views and CSV export are left out,
 // matching every other master page in this app (table view only).
 export default function Dashboard() {
-  const { loads, customers, carriers, drivers, vehicles, trailers, users, locations, typeOptions, mastersLoading, mastersError } = useData()
+  const { loads, customers, carriers, drivers, vehicles, trailers, users, locations, typeOptions, mastersLoading, mastersError, loadsRefreshing, refetchLoads } = useData()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
   const [pickupDateFilter, setPickupDateFilter] = useState('')
@@ -145,6 +145,15 @@ export default function Dashboard() {
     setDrawerOpen(true)
   }
   const toggleStatusFilter = (status) => setStatusFilter((prev) => (prev === status ? 'All' : status))
+
+  const handleRefresh = async () => {
+    try {
+      await refetchLoads()
+      toast.success('Loads refreshed')
+    } catch (err) {
+      toast.error(err.message || 'Failed to refresh loads')
+    }
+  }
 
   const copyShareLink = (load) => {
     const url = getShareLink(load)
@@ -276,9 +285,14 @@ export default function Dashboard() {
         title="Dashboard"
         description={`${filtered.length} of ${loads.length} loads`}
         actions={
-          <Button onClick={openCreate}>
-            <Plus className="h-4 w-4" /> Create Load
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" onClick={handleRefresh} disabled={loadsRefreshing}>
+              <RefreshCw className={`h-4 w-4 ${loadsRefreshing ? 'animate-spin' : ''}`} /> Refresh
+            </Button>
+            <Button onClick={openCreate}>
+              <Plus className="h-4 w-4" /> Create Load
+            </Button>
+          </div>
         }
       />
 

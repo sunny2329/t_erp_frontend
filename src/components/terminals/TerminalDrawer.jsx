@@ -3,6 +3,8 @@ import toast from 'react-hot-toast'
 import { Drawer } from '../ui/Drawer'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
+import { PhoneInput } from '../ui/PhoneInput'
+import { AddressAutocomplete } from '../ui/AddressAutocomplete'
 import { Toggle } from '../ui/Toggle'
 import { Button } from '../ui/Button'
 import { Section } from '../ui/Section'
@@ -90,7 +92,11 @@ export function TerminalDrawer({ open, onClose, terminalId, onSaved }) {
                 <Input value={form.extCode} onChange={(e) => set({ extCode: e.target.value })} />
               </Field>
               <Field label="Address" className="sm:col-span-2">
-                <Input value={form.address} onChange={(e) => set({ address: e.target.value })} />
+                <AddressAutocomplete
+                  value={form.address}
+                  onChange={(v) => set({ address: v })}
+                  onSelect={(place) => set({ address: place.address, city: place.city, state: place.state })}
+                />
               </Field>
               <Field label="City">
                 <Input value={form.city} onChange={(e) => set({ city: e.target.value })} />
@@ -113,7 +119,7 @@ export function TerminalDrawer({ open, onClose, terminalId, onSaved }) {
                 <Input value={form.contactPerson} onChange={(e) => set({ contactPerson: e.target.value })} />
               </Field>
               <Field label="Phone" hint="Digits only, stored as a number">
-                <Input value={form.contactPhone} onChange={(e) => set({ contactPhone: e.target.value })} />
+                <PhoneInput value={form.contactPhone} onChange={(e) => set({ contactPhone: e.target.value })} />
               </Field>
               <Field label="Email">
                 <Input type="email" value={form.contactEmail} onChange={(e) => set({ contactEmail: e.target.value })} />

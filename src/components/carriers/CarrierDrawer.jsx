@@ -4,6 +4,8 @@ import { Plus, Trash2 } from 'lucide-react'
 import { Drawer } from '../ui/Drawer'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
+import { PhoneInput } from '../ui/PhoneInput'
+import { AddressAutocomplete } from '../ui/AddressAutocomplete'
 import { Select } from '../ui/Select'
 import { SearchSelect } from '../ui/SearchSelect'
 import { Textarea } from '../ui/Textarea'
@@ -234,7 +236,11 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                   <Input value={form.contact.website} onChange={(e) => setSection('contact', { website: e.target.value })} />
                 </Field>
                 <Field label="Address Line 1">
-                  <Input value={form.contact.addressLine1} onChange={(e) => setSection('contact', { addressLine1: e.target.value })} />
+                  <AddressAutocomplete
+                    value={form.contact.addressLine1}
+                    onChange={(v) => setSection('contact', { addressLine1: v })}
+                    onSelect={(place) => setSection('contact', { addressLine1: place.address, city: place.city, state: place.state, country: place.country || form.contact.country, zipcode: place.zipCode })}
+                  />
                 </Field>
                 <Field label="Address Line 2">
                   <Input value={form.contact.addressLine2} onChange={(e) => setSection('contact', { addressLine2: e.target.value })} />
@@ -252,7 +258,7 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                   <Input value={form.contact.zipcode} onChange={(e) => setSection('contact', { zipcode: e.target.value })} />
                 </Field>
                 <Field label="Phone" hint="Digits only, stored as a number">
-                  <Input value={form.contact.phone} onChange={(e) => setSection('contact', { phone: e.target.value })} />
+                  <PhoneInput value={form.contact.phone} onChange={(e) => setSection('contact', { phone: e.target.value })} />
                 </Field>
                 <Field label="Fax" hint="Digits only, stored as a number">
                   <Input value={form.contact.fax} onChange={(e) => setSection('contact', { fax: e.target.value })} />
@@ -276,13 +282,13 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                 <Input type="email" value={form.dispatch.email} onChange={(e) => setSection('dispatch', { email: e.target.value })} />
               </Field>
               <Field label="Phone">
-                <Input value={form.dispatch.phone} onChange={(e) => setSection('dispatch', { phone: e.target.value })} />
+                <PhoneInput value={form.dispatch.phone} onChange={(e) => setSection('dispatch', { phone: e.target.value })} />
               </Field>
               <Field label="Phone 2">
-                <Input value={form.dispatch.phone2} onChange={(e) => setSection('dispatch', { phone2: e.target.value })} />
+                <PhoneInput value={form.dispatch.phone2} onChange={(e) => setSection('dispatch', { phone2: e.target.value })} />
               </Field>
               <Field label="Phone 3">
-                <Input value={form.dispatch.phone3} onChange={(e) => setSection('dispatch', { phone3: e.target.value })} />
+                <PhoneInput value={form.dispatch.phone3} onChange={(e) => setSection('dispatch', { phone3: e.target.value })} />
               </Field>
             </Grid>
           )}
@@ -322,7 +328,7 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                           <Input value={row.policyNumber} onChange={(e) => setLiabilityRow(i, { policyNumber: e.target.value })} />
                         </Field>
                         <Field label="Phone">
-                          <Input value={row.phone} onChange={(e) => setLiabilityRow(i, { phone: e.target.value })} />
+                          <PhoneInput value={row.phone} onChange={(e) => setLiabilityRow(i, { phone: e.target.value })} />
                         </Field>
                         <Field label="Expiration">
                           <Input type="date" value={row.expiration} onChange={(e) => setLiabilityRow(i, { expiration: e.target.value })} />
@@ -337,7 +343,7 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                           <Input value={row.agentName} onChange={(e) => setLiabilityRow(i, { agentName: e.target.value })} />
                         </Field>
                         <Field label="Agent Phone">
-                          <Input value={row.agentPhone} onChange={(e) => setLiabilityRow(i, { agentPhone: e.target.value })} />
+                          <PhoneInput value={row.agentPhone} onChange={(e) => setLiabilityRow(i, { agentPhone: e.target.value })} />
                         </Field>
                         <Field label="Agent Email">
                           <Input type="email" value={row.agentEmail} onChange={(e) => setLiabilityRow(i, { agentEmail: e.target.value })} />
@@ -369,7 +375,7 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                     <Input value={form.cargoInsurance.policyNumber} onChange={(e) => setSection('cargoInsurance', { policyNumber: e.target.value })} />
                   </Field>
                   <Field label="Phone">
-                    <Input value={form.cargoInsurance.phone} onChange={(e) => setSection('cargoInsurance', { phone: e.target.value })} />
+                    <PhoneInput value={form.cargoInsurance.phone} onChange={(e) => setSection('cargoInsurance', { phone: e.target.value })} />
                   </Field>
                   <Field label="Expiration">
                     <Input type="date" value={form.cargoInsurance.expiration} onChange={(e) => setSection('cargoInsurance', { expiration: e.target.value })} />
@@ -384,7 +390,7 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                     <Input value={form.cargoInsurance.agent} onChange={(e) => setSection('cargoInsurance', { agent: e.target.value })} />
                   </Field>
                   <Field label="Agent Phone">
-                    <Input value={form.cargoInsurance.agentPhone} onChange={(e) => setSection('cargoInsurance', { agentPhone: e.target.value })} />
+                    <PhoneInput value={form.cargoInsurance.agentPhone} onChange={(e) => setSection('cargoInsurance', { agentPhone: e.target.value })} />
                   </Field>
                   <Field label="Email">
                     <Input type="email" value={form.cargoInsurance.email} onChange={(e) => setSection('cargoInsurance', { email: e.target.value })} />
@@ -506,7 +512,11 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                     <Input value={form.factoringCompany.contactPerson} onChange={(e) => setSection('factoringCompany', { contactPerson: e.target.value })} />
                   </Field>
                   <Field label="Address" className="sm:col-span-2">
-                    <Input value={form.factoringCompany.address} onChange={(e) => setSection('factoringCompany', { address: e.target.value })} />
+                    <AddressAutocomplete
+                      value={form.factoringCompany.address}
+                      onChange={(v) => setSection('factoringCompany', { address: v })}
+                      onSelect={(place) => setSection('factoringCompany', { address: place.address, city: place.city, state: place.state, country: place.country || form.factoringCompany.country, zipCode: place.zipCode })}
+                    />
                   </Field>
                   <Field label="City">
                     <Input value={form.factoringCompany.city} onChange={(e) => setSection('factoringCompany', { city: e.target.value })} />
@@ -521,7 +531,7 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                     <Input value={form.factoringCompany.zipCode} onChange={(e) => setSection('factoringCompany', { zipCode: e.target.value })} />
                   </Field>
                   <Field label="Phone">
-                    <Input value={form.factoringCompany.phone} onChange={(e) => setSection('factoringCompany', { phone: e.target.value })} />
+                    <PhoneInput value={form.factoringCompany.phone} onChange={(e) => setSection('factoringCompany', { phone: e.target.value })} />
                   </Field>
                   <Field label="Fax">
                     <Input value={form.factoringCompany.fax} onChange={(e) => setSection('factoringCompany', { fax: e.target.value })} />
@@ -544,7 +554,11 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                     <Input value={form.invoicePayableTo.contactPerson} onChange={(e) => setSection('invoicePayableTo', { contactPerson: e.target.value })} />
                   </Field>
                   <Field label="Address" className="sm:col-span-2">
-                    <Input value={form.invoicePayableTo.address} onChange={(e) => setSection('invoicePayableTo', { address: e.target.value })} />
+                    <AddressAutocomplete
+                      value={form.invoicePayableTo.address}
+                      onChange={(v) => setSection('invoicePayableTo', { address: v })}
+                      onSelect={(place) => setSection('invoicePayableTo', { address: place.address, city: place.city, state: place.state, country: place.country || form.invoicePayableTo.country, zipCode: place.zipCode })}
+                    />
                   </Field>
                   <Field label="City">
                     <Input value={form.invoicePayableTo.city} onChange={(e) => setSection('invoicePayableTo', { city: e.target.value })} />
@@ -559,7 +573,7 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                     <Input value={form.invoicePayableTo.zipCode} onChange={(e) => setSection('invoicePayableTo', { zipCode: e.target.value })} />
                   </Field>
                   <Field label="Phone">
-                    <Input value={form.invoicePayableTo.phone} onChange={(e) => setSection('invoicePayableTo', { phone: e.target.value })} />
+                    <PhoneInput value={form.invoicePayableTo.phone} onChange={(e) => setSection('invoicePayableTo', { phone: e.target.value })} />
                   </Field>
                   <Field label="Fax">
                     <Input value={form.invoicePayableTo.fax} onChange={(e) => setSection('invoicePayableTo', { fax: e.target.value })} />
@@ -598,7 +612,7 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                     <Input value={form.remitZipCode} onChange={(e) => set({ remitZipCode: e.target.value })} />
                   </Field>
                   <Field label="Phone">
-                    <Input value={form.remitPhone} onChange={(e) => set({ remitPhone: e.target.value })} />
+                    <PhoneInput value={form.remitPhone} onChange={(e) => set({ remitPhone: e.target.value })} />
                   </Field>
                   <Field label="Fax">
                     <Input value={form.remitFax} onChange={(e) => set({ remitFax: e.target.value })} />
@@ -644,7 +658,7 @@ export function CarrierDrawer({ open, onClose, carrierId, onSaved }) {
                     <Input value={form.bankAddress} onChange={(e) => set({ bankAddress: e.target.value })} />
                   </Field>
                   <Field label="Phone">
-                    <Input value={form.bankPhone} onChange={(e) => set({ bankPhone: e.target.value })} />
+                    <PhoneInput value={form.bankPhone} onChange={(e) => set({ bankPhone: e.target.value })} />
                   </Field>
                   <Field label="Fax">
                     <Input value={form.bankFax} onChange={(e) => set({ bankFax: e.target.value })} />

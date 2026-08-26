@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/Button'
 import { DataTable } from '../../components/ui/DataTable'
 import { ActiveBadge } from '../../components/ui/ActiveBadge'
 import { DriverDrawer } from '../../components/drivers/DriverDrawer'
+import { formatPhone } from '../../utils/phone'
 
 export default function Drivers() {
   const { drivers, carriers, refetchMasters, mastersLoading, mastersError } = useData()
@@ -32,7 +33,7 @@ export default function Drivers() {
     { key: 'name', header: 'Name', render: (r) => <span className="font-medium text-slate-800 dark:text-slate-100">{r.firstName} {r.lastName}</span>, filterValue: (r) => `${r.firstName} ${r.lastName}` },
     { key: 'carrier', header: 'Carrier', render: (r) => carriers.find((c) => c.id === r.carrierId)?.name || '—', filterValue: (r) => carriers.find((c) => c.id === r.carrierId)?.name || '' },
     { key: 'license', header: 'License' },
-    { key: 'phone', header: 'Phone' },
+    { key: 'phone', header: 'Phone', render: (r) => formatPhone(r.phone) || '—' },
     { key: 'email', header: 'Email' },
     { key: 'active', header: 'Status', render: (r) => <ActiveBadge active={r.active} />, filterValue: (r) => (r.active ? 'Active' : 'Inactive') },
   ]

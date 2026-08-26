@@ -3,8 +3,10 @@ import toast from 'react-hot-toast'
 import { Modal } from '../ui/Modal'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
+import { PhoneInput } from '../ui/PhoneInput'
 import { Select } from '../ui/Select'
 import { Button } from '../ui/Button'
+import { AddressAutocomplete } from '../ui/AddressAutocomplete'
 
 const defaultFields = (entityLabel) => [
   { key: 'name', label: `${entityLabel} name`, required: true },
@@ -34,6 +36,21 @@ export function QuickAddModal({ open, onClose, title, entityLabel, fields, onCre
   const set = (key, value) => {
     setData((d) => ({ ...d, [key]: value }))
     setErrors((e) => ({ ...e, [key]: undefined }))
+  }
+
+  // Autofills city/state/zip/country from an AddressAutocomplete pick —
+  // harmless no-op for any key the current field config doesn't declare,
+  // since handleCreate only reads keys listed in activeFields.
+  const applyPlace = (addressKey, place) => {
+    setData((d) => ({
+      ...d,
+      [addressKey]: place.address || d[addressKey],
+      city: place.city,
+      state: place.state,
+      zipCode: place.zipCode,
+      country: place.country,
+    }))
+    setErrors((e) => ({ ...e, [addressKey]: undefined, city: undefined, state: undefined, zipCode: undefined }))
   }
 
   const handleCreate = async () => {
@@ -92,6 +109,15 @@ export function QuickAddModal({ open, onClose, title, entityLabel, fields, onCre
                   <option key={o.value} value={o.value}>{o.label}</option>
                 ))}
               </Select>
+            ) : f.type === 'address' ? (
+              <AddressAutocomplete
+                value={data[f.key] || ''}
+                onChange={(v) => set(f.key, v)}
+                onSelect={(place) => applyPlace(f.key, place)}
+                placeholder={f.placeholder}
+              />
+            ) : f.type === 'phone' ? (
+              <PhoneInput value={data[f.key] || ''} onChange={(e) => set(f.key, e.target.value)} autoFocus={i === 0} />
             ) : (
               <Input
                 value={data[f.key] || ''}

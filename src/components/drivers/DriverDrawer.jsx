@@ -3,6 +3,8 @@ import toast from 'react-hot-toast'
 import { Drawer } from '../ui/Drawer'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
+import { PhoneInput } from '../ui/PhoneInput'
+import { AddressAutocomplete } from '../ui/AddressAutocomplete'
 import { Select } from '../ui/Select'
 import { Toggle } from '../ui/Toggle'
 import { Button } from '../ui/Button'
@@ -221,7 +223,11 @@ export function DriverDrawer({ open, onClose, driverId, onSaved }) {
             <div className="space-y-4">
               <Grid>
                 <Field label="Address Line 1">
-                  <Input value={form.contact.addressLine1} onChange={(e) => setSection('contact', { addressLine1: e.target.value })} />
+                  <AddressAutocomplete
+                    value={form.contact.addressLine1}
+                    onChange={(v) => setSection('contact', { addressLine1: v })}
+                    onSelect={(place) => setSection('contact', { addressLine1: place.address, city: place.city, state: place.state, country: place.country || form.contact.country, zipcode: place.zipCode })}
+                  />
                 </Field>
                 <Field label="Address Line 2">
                   <Input value={form.contact.addressLine2} onChange={(e) => setSection('contact', { addressLine2: e.target.value })} />
@@ -245,16 +251,16 @@ export function DriverDrawer({ open, onClose, driverId, onSaved }) {
                   <Input value={form.contact.homeState} onChange={(e) => setSection('contact', { homeState: e.target.value })} />
                 </Field>
                 <Field label="Cell Phone">
-                  <Input value={form.contact.cellPhone} onChange={(e) => setSection('contact', { cellPhone: e.target.value })} />
+                  <PhoneInput value={form.contact.cellPhone} onChange={(e) => setSection('contact', { cellPhone: e.target.value })} />
                 </Field>
                 <Field label="Phone">
-                  <Input value={form.contact.phone} onChange={(e) => setSection('contact', { phone: e.target.value })} />
+                  <PhoneInput value={form.contact.phone} onChange={(e) => setSection('contact', { phone: e.target.value })} />
                 </Field>
                 <Field label="Emergency Contact">
                   <Input value={form.contact.emergencyContact} onChange={(e) => setSection('contact', { emergencyContact: e.target.value })} />
                 </Field>
                 <Field label="Emergency Phone">
-                  <Input value={form.contact.emergencyPhone} onChange={(e) => setSection('contact', { emergencyPhone: e.target.value })} />
+                  <PhoneInput value={form.contact.emergencyPhone} onChange={(e) => setSection('contact', { emergencyPhone: e.target.value })} />
                 </Field>
                 <Field label="SSN">
                   <Input value={form.contact.ssn} onChange={(e) => setSection('contact', { ssn: e.target.value })} />
@@ -446,7 +452,11 @@ export function DriverDrawer({ open, onClose, driverId, onSaved }) {
                   <Input type="email" value={form.payables.email} onChange={(e) => setSection('payables', { email: e.target.value })} />
                 </Field>
                 <Field label="Address" className="sm:col-span-2">
-                  <Input value={form.payables.address} onChange={(e) => setSection('payables', { address: e.target.value })} />
+                  <AddressAutocomplete
+                    value={form.payables.address}
+                    onChange={(v) => setSection('payables', { address: v })}
+                    onSelect={(place) => setSection('payables', { address: place.address, city: place.city, state: place.state, zipCode: place.zipCode })}
+                  />
                 </Field>
                 <Field label="City">
                   <Input value={form.payables.city} onChange={(e) => setSection('payables', { city: e.target.value })} />

@@ -145,10 +145,10 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
         { key: 'name', label: 'Customer Name', required: true },
         { key: 'customerTypeId', label: 'Customer Type', type: 'select', required: true, options: (typeOptions[17] || []).map((o) => ({ value: o.id, label: o.label })) },
         { key: 'salesAgentId', label: 'Sales Agent', type: 'select', required: true, options: users.map((u) => ({ value: u.id, label: u.fullName })) },
-        { key: 'address', label: 'Address' },
+        { key: 'address', label: 'Address', type: 'address', fullWidth: true },
         { key: 'city', label: 'City' },
         { key: 'state', label: 'State' },
-        { key: 'phone', label: 'Phone' },
+        { key: 'phone', label: 'Phone', type: 'phone' },
         { key: 'email', label: 'Email' },
       ],
       onCreate: async (data) => {
@@ -166,11 +166,11 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
       entityLabel: 'Location',
       fields: [
         { key: 'name', label: 'Location Name', required: true },
-        { key: 'address', label: 'Address' },
+        { key: 'address', label: 'Address', type: 'address', fullWidth: true },
         { key: 'city', label: 'City' },
         { key: 'state', label: 'State' },
         { key: 'zipCode', label: 'Zip Code' },
-        { key: 'phone', label: 'Phone' },
+        { key: 'phone', label: 'Phone', type: 'phone' },
       ],
       onCreate: async (data) => {
         const created = await locationsCrud.add({ name: data.name, address: data.address || data.city || data.name, city: data.city, state: data.state, zipCode: data.zipCode, phone: data.phone, carrierId: '' })

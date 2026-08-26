@@ -3,6 +3,8 @@ import toast from 'react-hot-toast'
 import { Drawer } from '../ui/Drawer'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
+import { PhoneInput } from '../ui/PhoneInput'
+import { AddressAutocomplete } from '../ui/AddressAutocomplete'
 import { Textarea } from '../ui/Textarea'
 import { Toggle } from '../ui/Toggle'
 import { Button } from '../ui/Button'
@@ -85,7 +87,11 @@ export function LocationDrawer({ open, onClose, locationId, onSaved }) {
                 <Input value={form.name} onChange={(e) => set({ name: e.target.value })} />
               </Field>
               <Field label="Address" required className="sm:col-span-2">
-                <Input value={form.address} onChange={(e) => set({ address: e.target.value })} />
+                <AddressAutocomplete
+                  value={form.address}
+                  onChange={(v) => set({ address: v })}
+                  onSelect={(place) => set({ address: place.address, city: place.city, state: place.state, zipCode: place.zipCode, country: place.country || form.country })}
+                />
               </Field>
               <Field label="Address Line 2" className="sm:col-span-2">
                 <Input value={form.address2} onChange={(e) => set({ address2: e.target.value })} />
@@ -115,7 +121,7 @@ export function LocationDrawer({ open, onClose, locationId, onSaved }) {
                 <Input value={form.contactPerson} onChange={(e) => set({ contactPerson: e.target.value })} />
               </Field>
               <Field label="Phone">
-                <Input value={form.phone} onChange={(e) => set({ phone: e.target.value })} />
+                <PhoneInput value={form.phone} onChange={(e) => set({ phone: e.target.value })} />
               </Field>
               <Field label="Phone Ext">
                 <Input value={form.phoneExt} onChange={(e) => set({ phoneExt: e.target.value })} />

@@ -104,6 +104,7 @@ export function DataProvider({ children }) {
 
   const [mastersLoading, setMastersLoading] = useState(false)
   const [mastersError, setMastersError] = useState(null)
+  const [loadsRefreshing, setLoadsRefreshing] = useState(false)
 
   const fetchAll = useCallback(async () => {
     setMastersLoading(true)
@@ -152,6 +153,19 @@ export function DataProvider({ children }) {
     if (isAuthenticated) fetchAll()
   }, [isAuthenticated, fetchAll])
 
+  // Refreshes just the loads table (e.g. the Dashboard's Refresh button) —
+  // skips the other masters and doesn't touch mastersLoading, so it won't
+  // blank out the rest of the page while in flight.
+  const refetchLoads = useCallback(async () => {
+    setLoadsRefreshing(true)
+    try {
+      const ld = await loadsApi.list()
+      setLoads(ld.rows.map(loadAdapter.fromApi))
+    } finally {
+      setLoadsRefreshing(false)
+    }
+  }, [])
+
   const loadsCrud = {
     add: async (form) => {
       const created = await loadsApi.create(loadDetailAdapter.toApi(form))
@@ -191,6 +205,8 @@ export function DataProvider({ children }) {
 
     loads,
     loadsCrud,
+    loadsRefreshing,
+    refetchLoads,
   }
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>

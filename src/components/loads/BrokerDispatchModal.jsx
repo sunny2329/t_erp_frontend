@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react'
 import { Modal } from '../ui/Modal'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
+import { PhoneInput } from '../ui/PhoneInput'
 import { Select } from '../ui/Select'
 import { Textarea } from '../ui/Textarea'
 import { Button } from '../ui/Button'
@@ -212,13 +213,13 @@ export function BrokerDispatchModal({ open, onClose, loadId, leg, splitNo, loadS
               <Input value={form.driverName} onChange={(e) => set({ driverName: e.target.value })} disabled={!form.carrierId} />
             </Field>
             <Field label="Cell Phone">
-              <Input value={form.driverPhone} onChange={(e) => set({ driverPhone: e.target.value })} disabled={!form.carrierId} />
+              <PhoneInput value={form.driverPhone} onChange={(e) => set({ driverPhone: e.target.value })} disabled={!form.carrierId} />
             </Field>
             <Field label="Secondary Driver Name">
               <Input value={form.secondaryDriverName} onChange={(e) => set({ secondaryDriverName: e.target.value })} disabled={!form.carrierId} />
             </Field>
             <Field label="Secondary Cell Phone">
-              <Input value={form.secondaryDriverPhone} onChange={(e) => set({ secondaryDriverPhone: e.target.value })} disabled={!form.carrierId} />
+              <PhoneInput value={form.secondaryDriverPhone} onChange={(e) => set({ secondaryDriverPhone: e.target.value })} disabled={!form.carrierId} />
             </Field>
             <Field label="Vehicle #">
               <Input value={form.vehicleNo} onChange={(e) => set({ vehicleNo: e.target.value })} disabled={!form.carrierId} />

@@ -5,6 +5,7 @@ import { PageHeader } from '../../components/ui/PageHeader'
 import { Button } from '../../components/ui/Button'
 import { DataTable } from '../../components/ui/DataTable'
 import { CustomerDrawer } from '../../components/customers/CustomerDrawer'
+import { formatPhone } from '../../utils/phone'
 
 export default function Customers() {
   const { customers, users, refetchMasters, mastersLoading, mastersError } = useData()
@@ -31,7 +32,7 @@ export default function Customers() {
     { key: 'name', header: 'Name', render: (r) => <span className="font-medium text-slate-800 dark:text-slate-100">{r.name}</span> },
     { key: 'salesAgent', header: 'Sales Agent', render: (r) => users.find((u) => u.id === r.salesAgentId)?.fullName || '—', filterValue: (r) => users.find((u) => u.id === r.salesAgentId)?.fullName || '' },
     { key: 'city', header: 'City', render: (r) => `${r.city || '—'}${r.state ? ', ' + r.state : ''}`, filterValue: (r) => `${r.city || ''} ${r.state || ''}` },
-    { key: 'phone', header: 'Phone' },
+    { key: 'phone', header: 'Phone', render: (r) => formatPhone(r.phone) || '—' },
     { key: 'email', header: 'Email' },
   ]
 

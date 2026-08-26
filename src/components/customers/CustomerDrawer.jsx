@@ -3,6 +3,8 @@ import toast from 'react-hot-toast'
 import { Drawer } from '../ui/Drawer'
 import { Field } from '../ui/Field'
 import { Input } from '../ui/Input'
+import { PhoneInput } from '../ui/PhoneInput'
+import { AddressAutocomplete } from '../ui/AddressAutocomplete'
 import { Select } from '../ui/Select'
 import { Textarea } from '../ui/Textarea'
 import { Toggle } from '../ui/Toggle'
@@ -136,7 +138,7 @@ export function CustomerDrawer({ open, onClose, customerId, onSaved }) {
                 <Input value={form.contactPerson} onChange={(e) => set({ contactPerson: e.target.value })} />
               </Field>
               <Field label="Phone" hint="Digits only, stored as a number">
-                <Input value={form.phone} onChange={(e) => set({ phone: e.target.value })} />
+                <PhoneInput value={form.phone} onChange={(e) => set({ phone: e.target.value })} />
               </Field>
               <Field label="Email">
                 <Input type="email" value={form.email} onChange={(e) => set({ email: e.target.value })} />
@@ -156,7 +158,11 @@ export function CustomerDrawer({ open, onClose, customerId, onSaved }) {
           <Section title="Location">
             <Grid>
               <Field label="Address" className="sm:col-span-2">
-                <Input value={form.address} onChange={(e) => set({ address: e.target.value })} />
+                <AddressAutocomplete
+                  value={form.address}
+                  onChange={(v) => set({ address: v })}
+                  onSelect={(place) => set({ address: place.address, city: place.city, state: place.state, country: place.country || form.country })}
+                />
               </Field>
               <Field label="City">
                 <Input value={form.city} onChange={(e) => set({ city: e.target.value })} />

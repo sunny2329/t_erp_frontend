@@ -5,6 +5,7 @@ import { PageHeader } from '../../components/ui/PageHeader'
 import { Button } from '../../components/ui/Button'
 import { DataTable } from '../../components/ui/DataTable'
 import { LocationDrawer } from '../../components/locations/LocationDrawer'
+import { formatPhone } from '../../utils/phone'
 
 export default function Locations() {
   const { locations, refetchMasters, mastersLoading, mastersError } = useData()
@@ -31,7 +32,7 @@ export default function Locations() {
     { key: 'name', header: 'Location Name', render: (r) => <span className="font-medium text-slate-800 dark:text-slate-100">{r.name}</span> },
     { key: 'address', header: 'Address' },
     { key: 'city', header: 'City', render: (r) => `${r.city || '—'}${r.state ? ', ' + r.state : ''}`, filterValue: (r) => `${r.city || ''} ${r.state || ''}` },
-    { key: 'phone', header: 'Phone' },
+    { key: 'phone', header: 'Phone', render: (r) => formatPhone(r.phone) || '—' },
   ]
 
   return (
