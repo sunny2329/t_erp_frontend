@@ -26,7 +26,8 @@ export function validateLoadForm(form) {
     if (s.stopType === 'Delivery') hasDelivery = true
     const se = {}
     if (!s.locationId) se.locationId = 'Required'
-    if (!s.stopDate) se.stopDate = 'Required'
+    if (!s.startDate) se.startDate = 'Required'
+    if (s.endDate && s.startDate && s.endDate < s.startDate) se.endDate = 'End Date must be on/after Start Date'
     // Start/End Time only required when both Appointment + Scheduled toggles
     // are on — matches the reference's validateStopTimings.
     if (s.appointmentRequired && s.scheduled) {

@@ -105,7 +105,8 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
       if (!stopErr) return prev
       const nextStopErr = { ...stopErr }
       if (updated.locationId) delete nextStopErr.locationId
-      if (updated.stopDate) delete nextStopErr.stopDate
+      if (updated.startDate) delete nextStopErr.startDate
+      if (!updated.endDate || !updated.startDate || updated.endDate >= updated.startDate) delete nextStopErr.endDate
       if (updated.startTime) delete nextStopErr.startTime
       if (updated.endTime) delete nextStopErr.endTime
       if (updated.tempValue !== '' && updated.tempValue != null) delete nextStopErr.tempValue

@@ -52,7 +52,8 @@ export function SplitStopModal({ open, onClose, locationOptions, onAddLocation, 
   const handleSave = () => {
     const next = {}
     if (!form.locationId) next.locationId = 'Required'
-    if (!form.stopDate) next.stopDate = 'Required'
+    if (!form.startDate) next.startDate = 'Required'
+    if (form.endDate && form.endDate < form.startDate) next.endDate = 'End Date must be on/after Start Date'
     if (tempRequired && (form.tempValue === '' || form.tempValue == null)) next.tempValue = 'Required'
     if (Object.keys(next).length) {
       setErrors(next)
@@ -89,8 +90,17 @@ export function SplitStopModal({ open, onClose, locationOptions, onAddLocation, 
           />
         </Field>
 
-        <Field label="Stop Date" required error={errors.stopDate}>
-          <Input type="date" value={form.stopDate} onChange={(e) => set({ stopDate: e.target.value })} error={errors.stopDate} />
+        <Field label="Start Date" required error={errors.startDate}>
+          <Input type="date" value={form.startDate} onChange={(e) => set({ startDate: e.target.value })} error={errors.startDate} />
+        </Field>
+        <Field label="End Date" error={errors.endDate} hint={!errors.endDate ? 'Defaults to Start Date' : undefined}>
+          <Input
+            type="date"
+            min={form.startDate || undefined}
+            value={form.endDate || form.startDate || ''}
+            onChange={(e) => set({ endDate: e.target.value })}
+            error={errors.endDate}
+          />
         </Field>
         <Field label="Start Time">
           <Input type="time" value={form.startTime} onChange={(e) => set({ startTime: e.target.value })} />

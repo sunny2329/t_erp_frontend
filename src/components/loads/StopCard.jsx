@@ -33,9 +33,10 @@ function SummaryItem({ label, value, className = '' }) {
 }
 
 function formatStopWindow(stop) {
-  if (!stop.stopDate) return '—'
+  if (!stop.startDate) return '—'
   const time = [stop.startTime, stop.endTime].filter(Boolean).join('–')
-  return time ? `${stop.stopDate} · ${time}` : stop.stopDate
+  const dateLabel = stop.endDate && stop.endDate !== stop.startDate ? `${stop.startDate} → ${stop.endDate}` : stop.startDate
+  return time ? `${dateLabel} · ${time}` : dateLabel
 }
 
 // Renders as a compact, read-only summary card by default (matching the
@@ -170,8 +171,17 @@ export function StopCard({ stop, index, total, onChange, onRemove, onMoveUp, onM
               </>
             )}
 
-            <Field label="Stop Date" required error={errors.stopDate}>
-              <Input type="date" value={stop.stopDate} onChange={(e) => set({ stopDate: e.target.value })} error={errors.stopDate} />
+            <Field label="Start Date" required error={errors.startDate}>
+              <Input type="date" value={stop.startDate} onChange={(e) => set({ startDate: e.target.value })} error={errors.startDate} />
+            </Field>
+            <Field label="End Date" error={errors.endDate} hint={!errors.endDate ? 'Defaults to Start Date' : undefined}>
+              <Input
+                type="date"
+                min={stop.startDate || undefined}
+                value={stop.endDate || stop.startDate || ''}
+                onChange={(e) => set({ endDate: e.target.value })}
+                error={errors.endDate}
+              />
             </Field>
             <Field label="Start Time" required={timeRequired} error={errors.startTime} hint={!timeRequired ? 'Required when Appointment + Scheduled are both on' : undefined}>
               <Input type="time" value={stop.startTime} onChange={(e) => set({ startTime: e.target.value })} error={errors.startTime} />

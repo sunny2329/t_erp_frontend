@@ -1205,7 +1205,12 @@ function stopFromApi(s, i) {
     customerRef: s.customer_ref || '',
     appointmentRequired: !!s.is_appt_required,
     scheduled: !!s.is_scheduled,
-    stopDate: dateOnly(s.start_dt),
+    // start_dt/end_dt are independent timestamps on the backend — a window
+    // can genuinely span more than one calendar day (e.g. Fri evening
+    // through Sat morning), so their date parts are kept separate here
+    // rather than collapsed onto one shared "Stop Date".
+    startDate: dateOnly(s.start_dt),
+    endDate: dateOnly(s.end_dt),
     startTime: timeOnly(s.start_dt),
     endTime: timeOnly(s.end_dt),
     qty: s.total_qty ?? '',
@@ -1257,8 +1262,10 @@ function stopToApi(s) {
     chassis_number: s.chassis || null,
     customer_trailer_number: s.customerTrailer || null,
     pro_number: s.pro || null,
-    start_dt: toIsoDt(s.stopDate, s.startTime),
-    end_dt: toIsoDt(s.stopDate, s.endTime),
+    start_dt: toIsoDt(s.startDate, s.startTime),
+    // Falls back to startDate when the user never touches End Date, so an
+    // untouched field still saves a same-day window like before.
+    end_dt: toIsoDt(s.endDate || s.startDate, s.endTime),
     seq_no: s.sequence,
     split_no: s.splitNo || 1,
     is_split_load: !!s.isSplitLoad,
