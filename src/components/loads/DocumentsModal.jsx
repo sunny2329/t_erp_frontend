@@ -17,7 +17,7 @@ function blankForm() {
 function formatDate(value) {
   if (!value) return ''
   const d = new Date(value)
-  return Number.isNaN(d.getTime()) ? value : d.toLocaleString()
+  return Number.isNaN(d.getTime()) ? value : d.toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: 'numeric', minute: '2-digit' })
 }
 
 // Mirrors the reference Loadx-Youngs-Frontend's UploadDocumentModal two-step

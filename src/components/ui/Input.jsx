@@ -1,8 +1,15 @@
 import clsx from 'clsx'
 
+const LOCALE_LOCKED_TYPES = ['date', 'datetime-local', 'month', 'week']
+
 export function Input({ error, className = '', ...props }) {
   return (
     <input
+      // Chrome/Edge render the native date/time picker's text using the
+      // input's effective language, not the OS locale — pin it to en-US so
+      // every date field in the app reads mm/dd/yyyy regardless of the
+      // machine's locale settings.
+      lang={LOCALE_LOCKED_TYPES.includes(props.type) ? 'en-US' : undefined}
       className={clsx(
         'w-full rounded-md border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:ring-1 focus:ring-brand-500',
         error

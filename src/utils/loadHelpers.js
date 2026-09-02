@@ -204,14 +204,14 @@ export function formatDate(value) {
   if (!value) return '—'
   const d = new Date(value)
   if (Number.isNaN(d.getTime())) return value
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  return d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
 }
 
 export function formatDateTime(value) {
   if (!value) return '—'
   const d = new Date(value)
   if (Number.isNaN(d.getTime())) return value
-  return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
+  return d.toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: 'numeric', minute: '2-digit' })
 }
 
 export function formatTime(value) {
