@@ -23,4 +23,7 @@ export const locationsApi = createMasterApi('/locations')
 export const terminalsApi = createMasterApi('/terminal')
 export const usersApi = createMasterApi('/users')
 export const pagesApi = createMasterApi('/pages')
-export const loadsApi = createMasterApi('/loads')
+export const loadsApi = {
+  ...createMasterApi('/loads'),
+  checkCustomerRef: (ref) => api.get('/loads/check-customer-ref', { ref }),
+}

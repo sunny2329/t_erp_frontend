@@ -13,6 +13,7 @@ import { useData } from '../../context/DataContext'
 import { QuickAddModal } from './QuickAddModal'
 import { StopCard } from './StopCard'
 import { blankLoadDetail } from '../../services/adapters'
+import { loadsApi } from '../../services/masterApi'
 import { blankStop, isReeferVanType } from './stopHelpers'
 import { validateLoadForm } from './loadValidation'
 
@@ -43,12 +44,33 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState({ stopErrors: {} })
   const [quickAdd, setQuickAdd] = useState(null)
+  const [customerRefTaken, setCustomerRefTaken] = useState(false)
 
   useEffect(() => {
     if (!open) return
     setForm(blankNewLoad())
     setErrors({ stopErrors: {} })
+    setCustomerRefTaken(false)
   }, [open])
+
+  // Debounced duplicate check — Rate Con Number (customerRef) should be
+  // unique across loads; this just warns, it doesn't block submission.
+  useEffect(() => {
+    const ref = form.customerRef?.trim()
+    if (!ref) {
+      setCustomerRefTaken(false)
+      return
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const { exists } = await loadsApi.checkCustomerRef(ref)
+        setCustomerRefTaken(exists)
+      } catch {
+        // silent — non-blocking check
+      }
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [form.customerRef])
 
   const set = (patch) => {
     setForm((f) => ({ ...f, ...patch }))
@@ -215,7 +237,12 @@ export function CreateLoadModal({ open, onClose, onCreated }) {
               />
             </Field>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Customer Ref #" required error={errors.customerRef} hint={!errors.customerRef ? 'Same reference applied to every stop' : undefined}>
+              <Field
+                label="Customer Ref #"
+                required
+                error={errors.customerRef}
+                hint={!errors.customerRef ? (customerRefTaken ? 'This field is already been used' : 'Same reference applied to every stop') : undefined}
+              >
                 <Input value={form.customerRef} onChange={(e) => { set({ customerRef: e.target.value }); setErrors((prev) => ({ ...prev, customerRef: undefined })) }} error={errors.customerRef} />
               </Field>
               <Field label="Commodity" className="col-span-2">
